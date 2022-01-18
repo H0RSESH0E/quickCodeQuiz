@@ -22,7 +22,17 @@ var object = {
     
     highScores: [
         
-        ["DB", 0]
+        ["DB", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0],
+        ["AAA", 0]
 
     ],
 
@@ -129,9 +139,44 @@ var drawPage = function(current){
 
     else if (current === "highScores") {
 
+        var displayCardHighScoresContainer = document.createElement("div");
+        displayCard.appendChild(displayCardHighScoresContainer);
+
+        var displayCardHighUsersColumn = document.createElement("div");
+        displayCardHighScoresContainer.appendChild(displayCardHighUsersColumn);
+        displayCardHighUsersColumn.className = "high-scores column users-inits";
 
 
-    }
+        var displayCardHighScoresColumn = document.createElement("div");
+        displayCardHighScoresContainer.appendChild(displayCardHighScoresColumn);
+        displayCardHighUsersColumn.className = "high-scores column users-scores";
+
+        for (var d = 0; d < 10; d++) {
+
+            for (var i = 0; i < 10; i++) {
+
+                var divDisplay = document.createElement("div");
+                switch (d) {
+                    case 0:
+                    displayCardHighUsersColumn.appendChild(divDisplay);
+                    divDisplay.className = "user-init-div";
+                    break;
+                
+                    case 1: 
+                    displayCardHighScoresColumn.appendChild(divDisplay);
+                    divDisplay.className = "user-score-div";
+                }
+                
+                divDisplay.textContent = object.highScores[i][d];
+                console.log(i, " divDisplay 'i'");
+                console.log(d, " divDisplay 'd'");
+                
+                    
+            }
+
+            debugger;
+        }
+}
 
     // Draw a new state
     mainEl.appendChild(displayCard);
@@ -144,13 +189,6 @@ console.log(object.gameState, " is The object.gameState");
 
 
 }
-
-// I was feeling overwhelmed by technical problems hearing you and being heard, the class content and personal issues at the time and I ended up venting all of that steam in your direction.  It wasn't professional of me.  I hope you will accept my apology and trust me that it won't happen again.
-
-// Was it at all an issue for you and is there anything more you think I should do to set things straight?
-
-// I'd like to apologize for my behavior at the end of our last class.  It was rude of me to interrupt you and disrespectful to speak with the tone I used.   I have no idea whether you gave it much thought or not, but just incase, and keeping with my own values, I hope you will accept my apology.  I won't let it happen again.
-
 
 var startStop = function (event) {
     console.log(event.target.value);
@@ -306,27 +344,12 @@ var updateHighScores = function(newRecordArray) {
     }
 
     object.highScores = tempArray;
+    userScore = 0;
 
     console.log(newRecordArray," is the newRecordArray");
     console.log(object.highScores, " are the highscores arrays");
 
 }
-
-
-
-    // if (newRecordArray[1] > object.highScores.first[1]) {
-    //     object.highScores.third = object.highScores.second;
-    //     object.highScores.second = object.highScores.first;
-    //     object.highScores.first = newRecordArray;
-    // }
-    // else if (newRecordArray[1] > object.highScores.second[1]) {
-    //     object.highScores.third = object.highScores.second;
-    //     object.highScores.second = newRecordArray;
-    // }
-    // else if (newRecordArray[1] > object.highScores.third[1]) {
-    //     object.highScores.third = newRecordArray
-    // }
-   
 
 
 var quizResponseHandler = function(event) {
@@ -372,13 +395,14 @@ var quizResponseHandler = function(event) {
         var newRecordArray = [lastPlayer, userScore];
         updateHighScores (newRecordArray);
         console.log("BA BA Ba 999 !!!!")
+        object.gameState = "highScores";
+        drawPage(object.gameState);
     }
-    if (targetElId === "initials-input") {
+    else if (targetElId === "initials-input") {
        
         console.log("HA HA HA!!!!")
     }
-    
-    else if (object.gameState === "resultsAndDetails") {
+        else if (object.gameState === "resultsAndDetails") {
         console.log(object.gameState, "Yeeee Haw!");
         object.gameState = "highScores";
         drawPage(object.gameState);
