@@ -50,17 +50,15 @@ var object = {
 }
 
 
-console.log(Object.keys(object.gamePlayContent).length)
-
-
 var mainEl = document.querySelector("main");
 var footerEl = document.querySelector("footer")
 var runGame = false;
 var game
 var qCount = 0;
 var userScore = 0;
-var timeRemaining = object.gameDynamics.timePerQuestion * Object.keys(object.gamePlayContent).length;
-console.log(timeRemaining)
+var numberOfQuestions = Object.keys(object.gamePlayContent).length;
+var timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
+
 
 var drawPage = function(current){
 
@@ -87,8 +85,9 @@ var drawPage = function(current){
     displayCardFooter.textContent = object.displayState[current][2];
 
     // if the display card is formatted for the game
+console.log(qCount);
+    if (current === "gamePlay" && qCount < numberOfQuestions) {
 
-    if (current === "gamePlay") {
         for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
 
             var displayCardList = document.createElement("ul");
@@ -141,13 +140,16 @@ var startStop = function (event) {
                 console.log(object.gameState);
             break;
             case "gamePlay":
-            
-                object.gameState ="gamePlay";
-                console.log(object.gameState);
+                var conf = window.confirm("Are you sure you want to start again?")
+                if (conf) {
+                    object.gameState ="titleCard";
+                    console.log(object.gameState);
+                }
             break;
             case "resultsAndDetails":
             
                 object.gameState ="newGame";
+                qCount = 0;
                 console.log(object.gameState);
             break;
             case "highScores":
@@ -207,15 +209,21 @@ var gameAdvance = function(mark) {
 
     console.log(mark);
     console.log("SUCCESS!!!!!");
+    qCount++;
     if (mark) {
         userScore++;
-        object.displayState[2] = "Your last response was correct.";
+        object.displayState.gamePlay[2] = "Your last response was correct.";
     }
     else {
         timeRemaining -= object.gameDynamics.timeDemerit;
-        object.displayState[2] = "Your last response was incorrect.";
+        object.displayState.gamePlay[2] = "Your last response was incorrect.";
     }
-
+    if (qCount === numberOfQuestions) {
+        object.displayState.gamePlay[0] = "You've completed the quiz.";
+        object.displayState.gamePlay[1] = "Click here to see your results.";
+        
+    }
+    drawPage(object.gameState)
 
 }
 
@@ -235,43 +243,46 @@ var responseValidator = function(questionIndex, responseIndex){
 
 var questionResponseHandler = function(event) {
     // get target element from event
-    var targetEl = event.target.getAttribute("id");
-    console.log("I'm alive!", targetEl)
+    var targetElId = event.target.getAttribute("id");
+    var targetEltext = event.target.textContent;
+    console.log("Log Strikes Back!!! ", targetEltext) ;
+    console.log("I'm alive!", targetElId);
 
-    switch (targetEl) {
+    switch (targetElId) {
         case "option0":
-            console.log("option00000", targetEl);
+            console.log("option00000", targetElId);
             gameAdvance(responseValidator(qCount, "0"));
             break;
         case "option1":
-            console.log("option111111", targetEl);
+            console.log("option111111", targetElId);
             gameAdvance(responseValidator(qCount, "1"));
             break;
         case "option2":
-            console.log("option222222", targetEl);
+            console.log("option222222", targetElId);
             gameAdvance(responseValidator(qCount, "2"));
             break;
         case "option3":
-            console.log("option33333", targetEl);
+            console.log("option33333", targetElId);
             gameAdvance(responseValidator(qCount, "3"));
-
             break;
     }
+    console.log(object.gameState);
 
+    if (targetEltext === "Click here to see your results.") {
+        console.log(object.gameState, "Yeah Hoo!");
+        object.gameState = "resultsAndDetails";
+        drawPage(object.gameState);
+    }
+    
+    if (object.gameState === "resultsAndDetails") {
+        console.log(object.gameState, "Yeeee Haw!");
+        object.gameState = "highScores";
+        drawPage(object.gameState);
+    }
 }
 
 
-
-
-
-
-// drawPage(object.gameState)
-// drawPage(titleCard);
-console.log(mainEl);
-// function listening for start/stop
 footerEl.addEventListener("click", startStop);
-
-mainEl.addEventListener("click", questionResponseHandler)
 
 mainEl.addEventListener("click", questionResponseHandler)
 
