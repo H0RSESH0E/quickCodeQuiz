@@ -7,7 +7,7 @@ var object = {
         newGame: ["You're about to test your knowledge of HTML, CSS and JavaScript.", "You can start or stop at any time."],
         countDown: ["Get ready.", "Get set.", "Go!"],
         gamePlay:["Question: ", "Select:", "Your last response was:"],
-        resultsAndDetails: ["Let's see how you did.", "Great Job!", "Well done.", "Better luck next time."],
+        resultsAndDetails: ["Let's see how you did.", "Great Job!", "Enter your name here for the record books!", "Better luck next time."],
         highScores: ["Here are the high scores:"]
     },
 
@@ -20,7 +20,11 @@ var object = {
         
     },
     
-    highScores: ["DB", 0],
+    highScores: [
+        
+        ["DB", 0]
+
+    ],
 
     gamePlayContent: [
         {
@@ -58,7 +62,8 @@ var qCount = 0;
 var userScore = 0;
 var numberOfQuestions = Object.keys(object.gamePlayContent).length;
 var timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
-
+var lastScore = "";
+var lastPlayer = "";
 
 var drawPage = function(current){
 
@@ -84,8 +89,7 @@ var drawPage = function(current){
     displayCardFooter.setAttribute("id", "cardFooter");
     displayCardFooter.textContent = object.displayState[current][2];
 
-    // if the display card is formatted for the game
-console.log(qCount);
+
     if (current === "gamePlay" && qCount < numberOfQuestions) {
 
         for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
@@ -98,6 +102,33 @@ console.log(qCount);
             displayCardQuestions.textContent = object.gamePlayContent[qCount].responseOptions[i];
                 
         }
+
+
+    } 
+    
+    else if (current === "resultsAndDetails") {
+
+        var displayCardScore = document.createElement("p")
+        displayCardParagraph.appendChild(displayCardScore);
+        displayCardParagraph.setAttribute("id", "cardParagraph");
+        displayCardParagraph.textContent = "Your score was: " + userScore;
+
+        var displayCardInput = document.createElement("input")
+        displayCardParagraph.appendChild(displayCardInput);
+        displayCardInput.setAttribute("id", "initials-input");
+        displayCardInput.setAttribute("type", "text");
+        displayCardInput.setAttribute("placeholder", object.displayState[current][2]);
+
+        var displayCardRecordSubmit = document.createElement("button");
+        displayCardParagraph.appendChild(displayCardRecordSubmit);
+        displayCardRecordSubmit.setAttribute("id", "sub-btn");
+        displayCardRecordSubmit.setAttribute("type", "submit");
+        displayCardRecordSubmit.className = "button submit-btn";
+        displayCardRecordSubmit.textContent = "SAVE";
+    }
+
+    else if (current === "highScores") {
+
 
 
     }
@@ -113,6 +144,12 @@ console.log(object.gameState, " is The object.gameState");
 
 
 }
+
+// I was feeling overwhelmed by technical problems hearing you and being heard, the class content and personal issues at the time and I ended up venting all of that steam in your direction.  It wasn't professional of me.  I hope you will accept my apology and trust me that it won't happen again.
+
+// Was it at all an issue for you and is there anything more you think I should do to set things straight?
+
+// I'd like to apologize for my behavior at the end of our last class.  It was rude of me to interrupt you and disrespectful to speak with the tone I used.   I have no idea whether you gave it much thought or not, but just incase, and keeping with my own values, I hope you will accept my apology.  I won't let it happen again.
 
 
 var startStop = function (event) {
@@ -155,6 +192,7 @@ var startStop = function (event) {
             case "highScores":
             
                 object.gameState ="newGame";
+                qCount = 0;
                 console.log(object.gameState);
             break;
 
@@ -180,9 +218,12 @@ var startStop = function (event) {
                 console.log(object.gameState);
             break;
             case "gamePlay":
-            
-                object.gameState ="resultsAndDetails";
-                console.log(object.gameState);
+                var conf = window.confirm("Are you sure you want to stop now?")
+                if (conf) {
+                    object.gameState ="resultsAndDetails";
+                    console.log(object.gameState);
+                }
+                
             break;
             case "resultsAndDetails":
             
@@ -192,6 +233,7 @@ var startStop = function (event) {
             case "highScores":
             
                 object.gameState ="titleCard";
+                qCount = 0;
                 console.log(object.gameState);
             break;
 
@@ -203,6 +245,8 @@ var startStop = function (event) {
     if (oldState !== object.gameState){
         drawPage(object.gameState)
     } 
+
+
 }
 
 var gameAdvance = function(mark) {
@@ -241,7 +285,53 @@ var responseValidator = function(questionIndex, responseIndex){
 
 }
 
-var questionResponseHandler = function(event) {
+var updateHighScores = function(newRecordArray) {
+
+    var tempArray = [];
+    var inserted = false;
+
+    for (var i = 0; i < 10; i++) {
+
+        console.log(i, " loops so far");
+        if (!inserted) {
+            if (newRecordArray[1] > object.highScores[i][1]) {
+                tempArray.push(newRecordArray);
+                tempArray.push(object.highScores[i]);
+                inserted = true;
+            }
+        }
+        else {
+            tempArray.push(object.highScores[i]);
+        }
+    }
+
+    object.highScores = tempArray;
+
+    console.log(newRecordArray," is the newRecordArray");
+    console.log(object.highScores, " are the highscores arrays");
+
+}
+
+
+
+    // if (newRecordArray[1] > object.highScores.first[1]) {
+    //     object.highScores.third = object.highScores.second;
+    //     object.highScores.second = object.highScores.first;
+    //     object.highScores.first = newRecordArray;
+    // }
+    // else if (newRecordArray[1] > object.highScores.second[1]) {
+    //     object.highScores.third = object.highScores.second;
+    //     object.highScores.second = newRecordArray;
+    // }
+    // else if (newRecordArray[1] > object.highScores.third[1]) {
+    //     object.highScores.third = newRecordArray
+    // }
+   
+
+
+var quizResponseHandler = function(event) {
+    event.preventDefault();
+
     // get target element from event
     var targetElId = event.target.getAttribute("id");
     var targetEltext = event.target.textContent;
@@ -265,6 +355,8 @@ var questionResponseHandler = function(event) {
             console.log("option33333", targetElId);
             gameAdvance(responseValidator(qCount, "3"));
             break;
+        default:
+        break;
     }
     console.log(object.gameState);
 
@@ -272,9 +364,21 @@ var questionResponseHandler = function(event) {
         console.log(object.gameState, "Yeah Hoo!");
         object.gameState = "resultsAndDetails";
         drawPage(object.gameState);
+        return;
+    }
+    console.log(targetElId, "Ba 999");
+    if (targetElId === "sub-btn") {
+        lastPlayer = document.querySelector("input").value;
+        var newRecordArray = [lastPlayer, userScore];
+        updateHighScores (newRecordArray);
+        console.log("BA BA Ba 999 !!!!")
+    }
+    if (targetElId === "initials-input") {
+       
+        console.log("HA HA HA!!!!")
     }
     
-    if (object.gameState === "resultsAndDetails") {
+    else if (object.gameState === "resultsAndDetails") {
         console.log(object.gameState, "Yeeee Haw!");
         object.gameState = "highScores";
         drawPage(object.gameState);
@@ -284,5 +388,5 @@ var questionResponseHandler = function(event) {
 
 footerEl.addEventListener("click", startStop);
 
-mainEl.addEventListener("click", questionResponseHandler)
+mainEl.addEventListener("click", quizResponseHandler)
 
