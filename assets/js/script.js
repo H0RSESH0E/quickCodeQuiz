@@ -1,8 +1,5 @@
-var mainEl = document.querySelector("main");
-var footerEl = document.querySelector("footer")
-var runGame = false;
-var game
-var qCount = 0;
+
+
 var object = {
 
     displayState: {
@@ -29,21 +26,21 @@ var object = {
         {
             stem: "",
             responseOptions: ["a", "b", "c"],
-            correctResponse: "",
+            correctResponse: "0",
             feedback: ""
 
         },
         {
             stem: "",
             responseOptions: ["A", "B", "C", "D"],
-            correctResponse: "",
+            correctResponse: "0",
             feedback: ""
 
         },
         {
             stem: "",
             responseOptions: ["1", "2", "3", "may the force be with you"],
-            correctResponse: "",
+            correctResponse: "3",
             feedback: ""
 
         }
@@ -53,9 +50,21 @@ var object = {
 }
 
 
+console.log(Object.keys(object.gamePlayContent).length)
+
+
+var mainEl = document.querySelector("main");
+var footerEl = document.querySelector("footer")
+var runGame = false;
+var game
+var qCount = 0;
+var userScore = 0;
+var timeRemaining = object.gameDynamics.timePerQuestion * Object.keys(object.gamePlayContent).length;
+console.log(timeRemaining)
+
 var drawPage = function(current){
 
-    mainEl.removeChild(mainEl.childNodes[0]);  
+    mainEl.removeChild(mainEl.childNodes[0]);
 
     var displayCard = document.createElement("div");
     displayCard.className = "display-card";
@@ -88,8 +97,7 @@ var drawPage = function(current){
             displayCardList.appendChild(displayCardQuestions);
             displayCardQuestions.setAttribute("id", "option" + i);
             displayCardQuestions.textContent = object.gamePlayContent[qCount].responseOptions[i];
-        
-    
+                
         }
 
 
@@ -195,8 +203,75 @@ var startStop = function (event) {
     } 
 }
 
+var gameAdvance = function(mark) {
+
+    console.log(mark);
+    console.log("SUCCESS!!!!!");
+    if (mark) {
+        userScore++;
+        object.displayState[2] = "Your last response was correct.";
+    }
+    else {
+        timeRemaining -= object.gameDynamics.timeDemerit;
+        object.displayState[2] = "Your last response was incorrect.";
+    }
+
+
+}
+
+var responseValidator = function(questionIndex, responseIndex){
+
+    // get the index number for the correct response from the database and compare it to the user's response
+    console.log("partway........")
+    var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
+    if (answerCheck === responseIndex) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
+
+var questionResponseHandler = function(event) {
+    // get target element from event
+    var targetEl = event.target.getAttribute("id");
+    console.log("I'm alive!", targetEl)
+
+    switch (targetEl) {
+        case "option0":
+            console.log("option00000", targetEl);
+            gameAdvance(responseValidator(qCount, "0"));
+            break;
+        case "option1":
+            console.log("option111111", targetEl);
+            gameAdvance(responseValidator(qCount, "1"));
+            break;
+        case "option2":
+            console.log("option222222", targetEl);
+            gameAdvance(responseValidator(qCount, "2"));
+            break;
+        case "option3":
+            console.log("option33333", targetEl);
+            gameAdvance(responseValidator(qCount, "3"));
+
+            break;
+    }
+
+}
+
+
+
+
+
+
 // drawPage(object.gameState)
 // drawPage(titleCard);
 console.log(mainEl);
 // function listening for start/stop
 footerEl.addEventListener("click", startStop);
+
+mainEl.addEventListener("click", questionResponseHandler)
+
+mainEl.addEventListener("click", questionResponseHandler)
+
