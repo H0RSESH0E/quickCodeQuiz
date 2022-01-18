@@ -2,20 +2,20 @@ var mainEl = document.querySelector("main");
 var footerEl = document.querySelector("footer")
 var runGame = false;
 var game
-
+var qCount = 0;
 var object = {
 
     displayState: {
-        titleCard: ["Would you like to play a game?", "Test your skill against the clock!"],
+        titleCard: ["Would you like to play a game?", "Test your skill against the clock!", "place holder titleCard"],
         newGame: ["You're about to test your knowledge of HTML, CSS and JavaScript.", "You can start or stop at any time."],
         countDown: ["Get ready.", "Get set.", "Go!"],
-        gamePlay:["Question: "],
+        gamePlay:["Question: ", "Select:", "Your last response was:"],
         resultsAndDetails: ["Let's see how you did.", "Great Job!", "Well done.", "Better luck next time."],
         highScores: ["Here are the high scores:"]
     },
 
+    // gameState values must equal the display state array names
     gameState: "titleCard",
-    // ["titleCard", "newGame", "countDown", "gamePlay", "resultsAndDetails", "highScores"],
 
     gameDynamics: {
         timePerQuestion: 15,
@@ -28,7 +28,21 @@ var object = {
     gamePlayContent: [
         {
             stem: "",
-            responseOptions: [],
+            responseOptions: ["a", "b", "c"],
+            correctResponse: "",
+            feedback: ""
+
+        },
+        {
+            stem: "",
+            responseOptions: ["A", "B", "C", "D"],
+            correctResponse: "",
+            feedback: ""
+
+        },
+        {
+            stem: "",
+            responseOptions: ["1", "2", "3", "may the force be with you"],
             correctResponse: "",
             feedback: ""
 
@@ -38,22 +52,6 @@ var object = {
     
 }
 
-
-
-
-// display function appends different html structures and content depending on the displayState object found in the object
-    //switch between display states
-
-
-
-
-// 
-
-
-  // creates the titleCard format with a div with an h1 and a background image
-
- 
-//   mainEl.appendChild(titleCard);
 
 var drawPage = function(current){
 
@@ -78,7 +76,25 @@ var drawPage = function(current){
     displayCard.appendChild(displayCardFooter);
     displayCardFooter.setAttribute("id", "cardFooter");
     displayCardFooter.textContent = object.displayState[current][2];
-       
+
+    // if the display card is formatted for the game
+
+    if (current === "gamePlay") {
+        for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
+
+            var displayCardList = document.createElement("ul");
+            displayCardParagraph.appendChild(displayCardList);
+            var displayCardQuestions = document.createElement("li");
+            displayCardList.appendChild(displayCardQuestions);
+            displayCardQuestions.setAttribute("id", "option" + i);
+            displayCardQuestions.textContent = object.gamePlayContent[qCount].responseOptions[i];
+        
+    
+        }
+
+
+    }
+
     // Draw a new state
     mainEl.appendChild(displayCard);
 
