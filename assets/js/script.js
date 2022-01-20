@@ -102,6 +102,7 @@ var qCount = 0;
 var userScore = 0;
 var lastScore = "";
 var lastPlayer = "";
+var x;
 
 
 var drawPage = function() {
@@ -119,24 +120,17 @@ var drawPage = function() {
 }
 
 
+var myCountDownFunction = function() {
 
-
-var countDownTimer = function (startStop) {
+    console.log("I'm running");
+    console.log(timeRemaining);
+    cardTimeValue.textContent = timeRemaining;
+    timeRemaining--;
     
-    
 
-    var myTimer = function(){
-        
-        cardTimeValue.textContent = timeRemaining;
-        timeRemaining--;
-    }
+};
 
-    if (!startStop){
-        clearInterval(oneSecondInterval);
-    }
 
-    var oneSecondInterval = setInterval(myTimer, 1000);
-}
 
 var createHighScoresDivs = function() {
 
@@ -184,11 +178,12 @@ var startStop = function (event) {
             
                 gameState ="countDown";
                 console.log(gameState);
-                countDownTimer(true);
-
+                timeRemaining = 3;
+                setInterval(myCountDownFunction,1000)
                 break;
             case "countDown":
-                countDownTimer(false);
+                clearInterval(myCountDownFunction);
+                // timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
                 gameState ="gamePlay";
                 console.log(gameState);
             break;
@@ -196,7 +191,8 @@ var startStop = function (event) {
                 var conf = window.confirm("Are you sure you want to start again?")
                 if (conf) {
                     gameState ="titleCard";
-                    console.log(gameState);
+                    console.log(gameState, "9999999");
+                    clearInterval(myCountDownFunction);
                 }
             break;
             case "resultsAndDetails":
@@ -238,6 +234,7 @@ var startStop = function (event) {
                 if (conf) {
                     gameState ="resultsAndDetails";
                     console.log(gameState);
+                    clearInterval(myCountDownFunction);
                 }
                 
             break;
