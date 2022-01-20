@@ -37,14 +37,18 @@ var object = {
             bodyParagrah: "",
             footerParagraph: "Sometimes the best move is not to play."
         },
+
     },
 
     // gameState values must equal the displayState object names
     gameState: "titleCard",
 
+    cardTime: "",
+
     gameDynamics: {
         timePerQuestion: 15,
         timeDemerit: 20,
+        countDownLength: 5,
     },
     
     highScores: [
@@ -106,41 +110,75 @@ var lastPlayer = "";
 // Playground
 
 var drawPage = function(current) {
-   
+    // real-time debugging
+    console.log("drawPage() started with: ", current)
+
+
     // removes the last gameState 
     cardHeader.removeChild(cardHeader.childNodes[0]);
     cardBody.removeChild(cardBody.childNodes[0]);
     cardFooter.removeChild(cardFooter.childNodes[0]);
 
-    // create the cardTitle, cardTime, bodyParagraph, footerParagraph
+    // create variables for new dom elements, append them, id them, and populate them with content:
+    //See README for labelled wireframe
+
+    // Populates the displayCard cardHeader <div>
     var cardTitle = document.createElement("h2")
     cardHeader.appendChild(cardTitle);
     cardTitle.setAttribute("id", "cardTitle");
     cardTitle.textContent = object.displayState.current.cardTitle;
+
+    // Populates the displayCard cardHeader <div>
+    var cardTimeDiv = document.createElement("div");
+    cardHeader.appendChild(cardTimeDiv);
+    cardTimeDiv.setAttribute("id", "cardTimeDiv");
 
     var cardTimeTitle = document.createElement("p")
     cardTimeDiv.appendChild(cardTime);
     cardTime.setAttribute("id", "cardTimeTitle");
     cardTime.textContent = object.displayState.current.cardTimeTitle;
 
-    var cardTime = document.createElement("p")
+    var cardTimeValue = document.createElement("p")
     cardTimeDiv.appendChild(cardTime);
     cardTime.setAttribute("id", "cardTime");
     cardTime.textContent = object.displayState.cardTime;
 
+    // Populates the displayCard cardBody <div>
     var bodyParagraph = document.createElement("p")
     cardBody.appendChild(bodyParagraph);
     bodyParagraph.setAttribute("id", "bodyParagraph");
     bodyParagraph.textContent = object.displayState.current.bodyParagraph;
     
+    // Populates the displayCard cardFooter <div>
     var footerParagraph = document.createElement("p")
     cardFooter.appendChild(footerParagraph);
     footerParagraph.setAttribute("id", "footerParagraph");
     footerParagraph.textContent = object.displayState.current.footerParagraph;
-
-
+    
+    
+    // real-time debugging
+    console.log("drawPage() ended with: ", current)
 }
 
+
+var countDownFunction = function (lengthOfTime) {
+    console.log("countDownFunction() started with: ", lengthOfTime)
+    
+    var myTimer = function(){
+         
+        var i = parseInt(displayCardTimer.textContent);
+        
+        displayCardTimer.textContent = i - 1;
+            if (i === 0 || object.gameState !== "countDown") {
+                clearInterval(oneSecondInterval);
+                console.log("oneSecondInterval CLEARED");
+                object.gameState = "gamePlay"
+                drawPage(object.gameState)
+            }
+    };
+    var oneSecondInterval = setInterval(myTimer, 1000);
+
+}
 {
     // query the object.displayState with the gameState stored in current and run applicable game functions to alter the object
 
@@ -159,16 +197,7 @@ var drawPage = function(current) {
     
    
 
-    var displayCardParagraph = document.createElement("p")
-    displayCard.appendChild(displayCardParagraph);
-    displayCardParagraph.setAttribute("id", "cardParagraph");
-    displayCardParagraph.textContent = object.displayState[current][1];
-
-    var displayCardFooter = document.createElement("p")
-    displayCard.appendChild(displayCardFooter);
-    displayCardFooter.setAttribute("id", "cardFooter");
-    displayCardFooter.textContent = object.displayState[current][2];
-    }
+   // Switches for game state content should now be unnecessary
 
     if (current === "countDown") {
         var displayCardTimer = document.createElement("h3")
