@@ -1,41 +1,47 @@
 
 
 var object = {
-
+    
     displayState: {
-        titleCard: {
+        "titleCard": {
             cardTitle: "JavaScript Quiz",
-            bodyParagrah: "Test your knowledge of JavaScript code.",
-            footerParagraph: "Press Start or Stop at any time."
+            bodyParagraph: "Test your knowledge of JavaScript code.",
+            footerParagraph: "Press Start or Stop at any time.",
+            cardTimeTitle: ""
         },
         newGame: {
             cardTitle: "The Rules:",
-            bodyParagrah: "You get time to answer every question, but answer correctly or you will have time taken away.",
-            footerParagraph:"You will get feedback here."
+            bodyParagraph: "You get time to answer every question, but answer correctly or you will have time taken away.",
+            footerParagraph:"You will get feedback here.",
+            cardTimeTitle: ""
         },
         
         countDown: {
             cardTitle: "Get Ready!",
-            bodyParagrah: "",
-            footerParagraph: ""
+            bodyParagraph: "XXX",
+            footerParagraph: "",
+            cardTimeTitle: ""
         },
 
         gamePlay: {
             cardTitle: "",
-            bodyParagrah: "",
-            footerParagraph: ""
+            bodyParagraph: "",
+            footerParagraph: "",
+            cardTimeTitle: "Time remaining:"
         },
         
         resultsAndDetails: {
-            cardTitle: "You scored: ",
-            bodyParagrah: "",
-            footerParagraph: "Enter your initials: "
+            cardTitle: "You finished the quiz in time.",
+            bodyParagraph: "",
+            footerParagraph: "Enter your initials: ",
+            cardTimeTitle: ""
         },
 
         highScores: {
             cardTitle: "High Scores",
-            bodyParagrah: "",
-            footerParagraph: "Sometimes the best move is not to play."
+            bodyParagraph: "",
+            footerParagraph: "Sometimes the best move is not to play.",
+            cardTimeTitle: ""
         },
 
     },
@@ -43,7 +49,9 @@ var object = {
     // gameState values must equal the displayState object names
     gameState: "titleCard",
 
-    cardTime: "",
+    gameStateS: ["titleCard", "newGame", "countDown", "gamePlay", "resultsAndDetails", "highScores"],
+
+    countDownTimeValue: 3,
 
     gameDynamics: {
         timePerQuestion: 15,
@@ -93,11 +101,11 @@ var object = {
     
 }
 
-
+var displayCard = document.querySelector("#displayCard");
 var cardHeader = document.querySelector("#cardHeader");
 var cardBody = document.querySelector("#cardBody");
 var cardFooter = document.querySelector("#cardFooter");
-
+var startStopDiv = document.querySelector("#start-stop-buttons");
 
 var numberOfQuestions = Object.keys(object.gamePlayContent).length;
 var timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
@@ -106,6 +114,8 @@ var qCount = 0;
 var userScore = 0;
 var lastScore = "";
 var lastPlayer = "";
+var oldState = ""
+
 
 // Playground
 
@@ -115,9 +125,11 @@ var drawPage = function(current) {
 
 
     // removes the last gameState 
-    cardHeader.removeChild(cardHeader.childNodes[0]);
-    cardBody.removeChild(cardBody.childNodes[0]);
-    cardFooter.removeChild(cardFooter.childNodes[0]);
+    
+    
+    cardHeader.innerHTML = "";
+    cardBody.innerHTML = "";
+    cardFooter.innerHTML = "";
 
     // create variables for new dom elements, append them, id them, and populate them with content:
     //See README for labelled wireframe
@@ -126,7 +138,7 @@ var drawPage = function(current) {
     var cardTitle = document.createElement("h2")
     cardHeader.appendChild(cardTitle);
     cardTitle.setAttribute("id", "cardTitle");
-    cardTitle.textContent = object.displayState.current.cardTitle;
+    cardTitle.textContent = object.displayState[current].cardTitle;
 
     // Populates the displayCard cardHeader <div>
     var cardTimeDiv = document.createElement("div");
@@ -134,396 +146,91 @@ var drawPage = function(current) {
     cardTimeDiv.setAttribute("id", "cardTimeDiv");
 
     var cardTimeTitle = document.createElement("p")
-    cardTimeDiv.appendChild(cardTime);
-    cardTime.setAttribute("id", "cardTimeTitle");
-    cardTime.textContent = object.displayState.current.cardTimeTitle;
+    cardTimeDiv.appendChild(cardTimeTitle);
+    cardTimeTitle.setAttribute("id", "cardTimeTitle");
+    cardTimeTitle.textContent = object.displayState[current].cardTimeTitle;
 
     var cardTimeValue = document.createElement("p")
-    cardTimeDiv.appendChild(cardTime);
-    cardTime.setAttribute("id", "cardTime");
-    cardTime.textContent = object.displayState.cardTime;
+    cardTimeDiv.appendChild(cardTimeValue);
+    cardTimeValue.setAttribute("id", "cardTimeValue");
+    cardTimeValue.textContent = object.displayState.countDownTimeValue;
 
     // Populates the displayCard cardBody <div>
     var bodyParagraph = document.createElement("p")
     cardBody.appendChild(bodyParagraph);
     bodyParagraph.setAttribute("id", "bodyParagraph");
-    bodyParagraph.textContent = object.displayState.current.bodyParagraph;
+    bodyParagraph.textContent = object.displayState[current].bodyParagraph;
+
+    var questionList = document.createElement("ul");
+    cardBody.appendChild(bodyParagraph);
+    questionList.setAttribute("id", "questionList");
     
     // Populates the displayCard cardFooter <div>
     var footerParagraph = document.createElement("p")
     cardFooter.appendChild(footerParagraph);
     footerParagraph.setAttribute("id", "footerParagraph");
-    footerParagraph.textContent = object.displayState.current.footerParagraph;
+    footerParagraph.textContent = object.displayState[current].footerParagraph;
     
     
     // real-time debugging
     console.log("drawPage() ended with: ", current)
 }
 
+var updatePage = function(current) {
+    cardTitle.textContent = object.displayState[current].cardTitle;
+    cardTimeTitle.textContent = object.displayState[current].cardTimeTitle;
+    cardTimeValue.textContent = object.displayState.countDownTimeValue;
+    bodyParagraph.textContent = object.displayState[current].bodyParagraph;
+    footerParagraph.textContent = object.displayState[current].footerParagraph;
+}
 
 var countDownFunction = function (lengthOfTime) {
     console.log("countDownFunction() started with: ", lengthOfTime)
-    
+    var i = object.countDownTimeValue;
+
     var myTimer = function(){
-         
-        var i = parseInt(displayCardTimer.textContent);
+
+        console.log(i)
+        object.countDownTimeValue = i;
+        cardTimeValue.textContent = object.countDownTimeValue;
         
-        displayCardTimer.textContent = i - 1;
-            if (i === 0 || object.gameState !== "countDown") {
+
+            if (i === 0) {
+                
+                switch (object.gameState) {
+
+                    case "countDown":
+                        bodyParagraph.style.cssText += "font-size:200%";
+                        object.displayState.countDown.bodyParagraph = "Go!";
+                        updatePage(object.gameState);
+                        console.log(object.displayState.countDown.bodyParagraph);
+                        console.log("YEEHAWWW@@@");
+                        console.log(i);
+                        break;
+                    case "gamePlay":
+                        clearInterval(oneSecondInterval);
+                        console.log("oneSecondInterval CLEARED");
+                        object.gameState = "resultsAndDetails";
+                        object.displayState.resultsAndDetails.bodyParagrah.textContent = "You scored :" + userScore;
+                        if (qCount !== numberOfQuestions) {
+                            object.displayState.resultsAndDetails.cardTitle = "You ran out of time!";
+                        }
+                }
+            }
+            else if (i === -1) {
                 clearInterval(oneSecondInterval);
-                console.log("oneSecondInterval CLEARED");
-                object.gameState = "gamePlay"
-                drawPage(object.gameState)
+                bodyParagraph.style.cssText = "";
+                object.gameState = "gamePlay";
+                updatePage(object.gameState)
             }
+        
+            i--;
+            // updatePage();
     };
+
     var oneSecondInterval = setInterval(myTimer, 1000);
-
-}
-{
-    // query the object.displayState with the gameState stored in current and run applicable game functions to alter the object
-
-    //
-
-
-
-
-
-    // creates a new div element to build every game state inside of
-
-
-    // switches to the appropriate set of containers for whichever game state
-
-    if (current === "titleCard" || current === "newGame" || current === "gamePlay" || current === "resultsAndDetails") {
-    
-   
-
-   // Switches for game state content should now be unnecessary
-
-    if (current === "countDown") {
-        var displayCardTimer = document.createElement("h3")
-        displayCard.appendChild(displayCardTimer);
-        displayCardTimer.setAttribute("id", "countDownText");
-        displayCardTimer.textContent = "5";
-       
-        mainEl.appendChild(displayCard);
-    
-        var myTimer = function(){
-         
-            var i = parseInt(displayCardTimer.textContent);
-            
-            displayCardTimer.textContent = i - 1;
-                if (i === 0 || object.gameState !== "countDown") {
-                    clearInterval(oneSecondInterval);
-                    console.log("oneSecondInterval CLEARED");
-                    object.gameState = "gamePlay"
-                    drawPage(object.gameState)
-                }
-        };
-        var oneSecondInterval = setInterval(myTimer, 1000);
-
-
-      
-
-    }
-
-    if (current === "gamePlay" && qCount < numberOfQuestions) {
-
-
-        //start and display interal timer
-        var displayCardTimer = document.createElement("h3")
-        displayCard.appendChild(displayCardTimer);
-        displayCardTimer.setAttribute("id", "countDownText");
-        displayCardTimer.textContent = timeRemaining;
-       
-        mainEl.appendChild(displayCard);
-        var myGameTimer = function(){
-         
-            var i = parseInt(displayCardTimer.textContent);
-            
-            displayCardTimer.textContent = i -1;
-                if (i === 0 || object.gameState !== "gamePlay") {
-                    clearInterval(oneSecondGameInterval);
-                    console.log("GAME OVER CLEARED");
-                    object.gameState = "resultsAndDetails"
-                    drawPage(object.gameState)
-                }
-        };
-        var oneSecondGameInterval = setInterval(myGameTimer, 1000);
-
-
-        for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
-
-            
-           
-            var displayCardList = document.createElement("ul");
-            displayCardList.setAttribute("id", "QuestionsUl")
-            displayCardParagraph.appendChild(displayCardList);
-            var displayCardQuestions = document.createElement("li");
-            displayCardList.appendChild(displayCardQuestions);
-            displayCardQuestions.setAttribute("id", "option" + i);
-            displayCardQuestions.className = "options link";
-            displayCardQuestions.textContent = object.gamePlayContent[qCount].responseOptions[i];
-                
-        }
-        console.log(displayCardHeader.textContent, " ^^^");
-        console.log(object.displayState.gamePlay[0]);
-        console.log(object.gamePlayContent[qCount].stem)
-        displayCardHeader.textContent = object.displayState.gamePlay[0] + " " + object.gamePlayContent[qCount].stem;
-    } 
-
-    else if (current === "gamePlay" && qCount === numberOfQuestions) {
-
-        displayCardParagraph.className = "link";
-
-    }
-    
-    else if (current === "resultsAndDetails") {
-
-        var displayCardScore = document.createElement("p")
-        displayCardParagraph.appendChild(displayCardScore);
-        displayCardParagraph.setAttribute("id", "cardParagraph");
-        displayCardParagraph.textContent = "Your score was: " + userScore;
-        
-        var displayCardBreak = document.createElement("br")
-        displayCardParagraph.appendChild(displayCardBreak);
-        var displayCardBreak1 = document.createElement("br")
-        displayCardParagraph.appendChild(displayCardBreak1);
-
-        var displayCardInput = document.createElement("input")
-        displayCardParagraph.appendChild(displayCardInput);
-        displayCardInput.setAttribute("id", "initials-input");
-        displayCardInput.setAttribute("type", "text");
-        displayCardInput.setAttribute("placeholder", "AAA");
-        displayCardInput.setAttribute("maxlength", "3");
-        displayCardInput.textContent = "AAA"
-
-        displayCardFooter.className = "link";
-    }
-
-    else if (current === "highScores") {
-
-        var displayCardHighScoresContainer = document.createElement("div");
-        displayCard.appendChild(displayCardHighScoresContainer);
-        displayCardHighScoresContainer.setAttribute("id", "highScoreContainer");
-
-        var displayCardHighUsersColumn = document.createElement("div");
-        displayCardHighScoresContainer.appendChild(displayCardHighUsersColumn);
-        displayCardHighUsersColumn.className = "high-scores column users-inits";
-
-
-        var displayCardHighScoresColumn = document.createElement("div");
-        displayCardHighScoresContainer.appendChild(displayCardHighScoresColumn);
-        displayCardHighUsersColumn.className = "high-scores column users-scores";
-
-        for (var d = 0; d < 2; d++) {
-
-            for (var i = 0; i < 10; i++) {
-
-                var divDisplay = document.createElement("div");
-                switch (d) {
-                    case 0:
-                    displayCardHighUsersColumn.appendChild(divDisplay);
-                    divDisplay.className = "users-init-div";
-                    break;
-                
-                    case 1: 
-                    displayCardHighScoresColumn.appendChild(divDisplay);
-                    divDisplay.className = "users-scores-div";
-                }
-                console.log(i," <-- i ", d, " <-- d");
-                divDisplay.textContent = object.highScores[i][d];
-                console.log(i, " divDisplay 'i'");
-                console.log(d, " divDisplay 'd'");
-                
-            }
-        }
-    }
-
-    // Draw a new state
-    mainEl.appendChild(displayCard);
-
-  
-}
-
-
-//Playground
-
-
-var drawPage = function(current) {
-    console.log(object.gameState, " drawPage gamestate");
-    console.log(current, " current");
-    // removes the last gameState 
-    mainEl.removeChild(mainEl.childNodes[0]);
-
-    // creates a new div element to build every game state inside of
-    var displayCard = document.createElement("div");
-    displayCard.className = "display-card";
-    displayCard.setAttribute("id", "displayCard");
-
-    // switches to the appropriate set of containers for whichever game state
-
-    if (current === "titleCard" || current === "newGame" || current === "gamePlay" || current === "resultsAndDetails") {
-    
-    var displayCardHeader = document.createElement("h2")
-    displayCard.appendChild(displayCardHeader);
-    displayCardHeader.setAttribute("id", "cardHeader");
-    displayCardHeader.textContent = object.displayState[current][0];
-
-    var displayCardParagraph = document.createElement("p")
-    displayCard.appendChild(displayCardParagraph);
-    displayCardParagraph.setAttribute("id", "cardParagraph");
-    displayCardParagraph.textContent = object.displayState[current][1];
-
-    var displayCardFooter = document.createElement("p")
-    displayCard.appendChild(displayCardFooter);
-    displayCardFooter.setAttribute("id", "cardFooter");
-    displayCardFooter.textContent = object.displayState[current][2];
-    }
-
-    if (current === "countDown") {
-        var displayCardTimer = document.createElement("h3")
-        displayCard.appendChild(displayCardTimer);
-        displayCardTimer.setAttribute("id", "countDownText");
-        displayCardTimer.textContent = "5";
-       
-        mainEl.appendChild(displayCard);
-    
-        var myTimer = function(){
-         
-            var i = parseInt(displayCardTimer.textContent);
-            
-            displayCardTimer.textContent = i - 1;
-                if (i === 0 || object.gameState !== "countDown") {
-                    clearInterval(oneSecondInterval);
-                    console.log("oneSecondInterval CLEARED");
-                    object.gameState = "gamePlay"
-                    drawPage(object.gameState)
-                }
-        };
-        var oneSecondInterval = setInterval(myTimer, 1000);
-
-
-      
-
-    }
-
-    if (current === "gamePlay" && qCount < numberOfQuestions) {
-
-
-        //start and display interal timer
-        var displayCardTimer = document.createElement("h3")
-        displayCard.appendChild(displayCardTimer);
-        displayCardTimer.setAttribute("id", "countDownText");
-        displayCardTimer.textContent = timeRemaining;
-       
-        mainEl.appendChild(displayCard);
-        var myGameTimer = function(){
-         
-            var i = parseInt(displayCardTimer.textContent);
-            
-            displayCardTimer.textContent = i -1;
-                if (i === 0 || object.gameState !== "gamePlay") {
-                    clearInterval(oneSecondGameInterval);
-                    console.log("GAME OVER CLEARED");
-                    object.gameState = "resultsAndDetails"
-                    drawPage(object.gameState)
-                }
-        };
-        var oneSecondGameInterval = setInterval(myGameTimer, 1000);
-
-
-        for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
-
-            
-           
-            var displayCardList = document.createElement("ul");
-            displayCardList.setAttribute("id", "QuestionsUl")
-            displayCardParagraph.appendChild(displayCardList);
-            var displayCardQuestions = document.createElement("li");
-            displayCardList.appendChild(displayCardQuestions);
-            displayCardQuestions.setAttribute("id", "option" + i);
-            displayCardQuestions.className = "options link";
-            displayCardQuestions.textContent = object.gamePlayContent[qCount].responseOptions[i];
-                
-        }
-        console.log(displayCardHeader.textContent, " ^^^");
-        console.log(object.displayState.gamePlay[0]);
-        console.log(object.gamePlayContent[qCount].stem)
-        displayCardHeader.textContent = object.displayState.gamePlay[0] + " " + object.gamePlayContent[qCount].stem;
-    } 
-
-    else if (current === "gamePlay" && qCount === numberOfQuestions) {
-
-        displayCardParagraph.className = "link";
-
-    }
-    
-    else if (current === "resultsAndDetails") {
-
-        var displayCardScore = document.createElement("p")
-        displayCardParagraph.appendChild(displayCardScore);
-        displayCardParagraph.setAttribute("id", "cardParagraph");
-        displayCardParagraph.textContent = "Your score was: " + userScore;
-        
-        var displayCardBreak = document.createElement("br")
-        displayCardParagraph.appendChild(displayCardBreak);
-        var displayCardBreak1 = document.createElement("br")
-        displayCardParagraph.appendChild(displayCardBreak1);
-
-        var displayCardInput = document.createElement("input")
-        displayCardParagraph.appendChild(displayCardInput);
-        displayCardInput.setAttribute("id", "initials-input");
-        displayCardInput.setAttribute("type", "text");
-        displayCardInput.setAttribute("placeholder", "AAA");
-        displayCardInput.setAttribute("maxlength", "3");
-        displayCardInput.textContent = "AAA"
-
-        displayCardFooter.className = "link";
-    }
-
-    else if (current === "highScores") {
-
-        var displayCardHighScoresContainer = document.createElement("div");
-        displayCard.appendChild(displayCardHighScoresContainer);
-        displayCardHighScoresContainer.setAttribute("id", "highScoreContainer");
-
-        var displayCardHighUsersColumn = document.createElement("div");
-        displayCardHighScoresContainer.appendChild(displayCardHighUsersColumn);
-        displayCardHighUsersColumn.className = "high-scores column users-inits";
-
-
-        var displayCardHighScoresColumn = document.createElement("div");
-        displayCardHighScoresContainer.appendChild(displayCardHighScoresColumn);
-        displayCardHighUsersColumn.className = "high-scores column users-scores";
-
-        for (var d = 0; d < 2; d++) {
-
-            for (var i = 0; i < 10; i++) {
-
-                var divDisplay = document.createElement("div");
-                switch (d) {
-                    case 0:
-                    displayCardHighUsersColumn.appendChild(divDisplay);
-                    divDisplay.className = "users-init-div";
-                    break;
-                
-                    case 1: 
-                    displayCardHighScoresColumn.appendChild(divDisplay);
-                    divDisplay.className = "users-scores-div";
-                }
-                console.log(i," <-- i ", d, " <-- d");
-                divDisplay.textContent = object.highScores[i][d];
-                console.log(i, " divDisplay 'i'");
-                console.log(d, " divDisplay 'd'");
-                
-            }
-        }
-    }
-
-    // Draw a new state
-    mainEl.appendChild(displayCard);
-
-  
+    // drawPage(object.gameState)
+    console.log("countDownFunction() ended with: ", lengthOfTime)
 }
 
 var startStop = function (event) {
@@ -544,10 +251,12 @@ var startStop = function (event) {
             case "newGame":
             
                 object.gameState ="countDown";
+                countDownFunction (object.countDownTimeValue)
                 console.log(object.gameState);
                 break;
             case "countDown":
-            
+                object.cardTimeValue = timeRemaining;
+                countDownFunction (object.cardTimeValue)
                 object.gameState ="gamePlay";
                 console.log(object.gameState);
             break;
@@ -555,6 +264,11 @@ var startStop = function (event) {
                 var conf = window.confirm("Are you sure you want to start again?")
                 if (conf) {
                     object.gameState ="titleCard";
+                    timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
+                    qCount = 0;
+                    userScore = 0;
+                    lastScore = "";
+                    lastPlayer = "";
                     console.log(object.gameState);
                 }
             break;
@@ -588,7 +302,6 @@ var startStop = function (event) {
                 console.log(object.gameState);
                 break;
             case "countDown":
-            
                 object.gameState ="newGame";
                 console.log(object.gameState);
             break;
@@ -618,46 +331,62 @@ var startStop = function (event) {
     }
     
     if (oldState !== object.gameState){
-        drawPage(object.gameState)
+        updatePage(object.gameState)
     } 
 
 
 }
 
+// This function counts and evaluates users selections, updates the displayState with the next question, adds points and subtracts time
 var gameAdvance = function(mark) {
-
-    console.log(mark);
-    console.log("SUCCESS!!!!!");
+    console.log("gameAdvance() started with: ", mark)
+    
     qCount++;
+
+    questionList.removeChild(mainEl.childNodes[0]);
+
+    for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
+
+        var option = document.createElement("li");
+        questionList.appendChild(option);
+        option.setAttribute("id", "option" + i);
+        option.className = "options link";
+        option.textContent = object.gamePlayContent[qCount].responseOptions[i];
+            
+    }
+
     if (mark) {
         userScore++;
-        object.displayState.gamePlay[2] = "Your last response was: CORRECT.";
+        object.displayState.gamePlay.footerParagraph = "Your last response was: CORRECT.";
     }
     else {
         timeRemaining -= object.gameDynamics.timeDemerit;
         object.displayState.gamePlay[2] = "Your last response was: INCORRECT.";
     }
+
     if (qCount === numberOfQuestions) {
-        object.displayState.gamePlay[0] = "You've completed the quiz.";
-        object.displayState.gamePlay[1] = "Click here to see your results.";
-        
+        object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
+        object.displayState.gamePlay.footerParagraph = "Click here to see your results.";
     }
+
     drawPage(object.gameState)
 
+    console.log("gameAdvance() ended with: ", mark)
 }
 
 var responseValidator = function(questionIndex, responseIndex) {
+    console.log("responseValidator() began with: ", questionIndex, " & ", responseIndex);
 
     // get the index number for the correct response from the database and compare it to the user's response
-    console.log("partway........")
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
     if (answerCheck === responseIndex) {
+        console.log("responseValidator() ended TRUE with: ", questionIndex, " & ", responseIndex);
         return true;
     }
     else {
+        console.log("responseValidator() ended FALSE with: ", questionIndex, " & ", responseIndex);
         return false;
-    }
-
+    };
 }
 
 var updateHighScores = function(newRecordArray) {
@@ -691,8 +420,7 @@ var updateHighScores = function(newRecordArray) {
 
 }
 
-
-var quizResponseHandler = function(event) {
+var mouseInputHandler = function(event) {
     event.preventDefault();
 
     // get target element from event
@@ -751,7 +479,6 @@ var quizResponseHandler = function(event) {
     }
 }
 
-
 var highlightLinkText = function (event) {
 
     var targetElement = event.target;
@@ -772,9 +499,7 @@ var unhighlightLinkText = function (event) {
 
 drawPage(object.gameState);
 
-footerEl.addEventListener("click", startStop);
-
-mainEl.addEventListener("click", quizResponseHandler)
-
-mainEl.onmouseover = highlightLinkText;
-mainEl.onmouseout = unhighlightLinkText;
+startStopDiv.addEventListener("click", startStop);
+displayCard.addEventListener("click", mouseInputHandler)
+displayCard.onmouseover = highlightLinkText;
+displayCard.onmouseout = unhighlightLinkText;
