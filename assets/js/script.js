@@ -16,8 +16,8 @@ var object = {
         
         countDown: {
             cardTitle: "Get Ready!",
-            bodyParagrah: "",
-            footerParagraph: ""
+            bodyParagrah: "The game is about to begin.",
+            footerParagraph: "... "
         },
 
         gamePlay: {
@@ -103,7 +103,6 @@ var userScore = 0;
 var lastScore = "";
 var lastPlayer = "";
 
-// Playground
 
 var drawPage = function() {
    
@@ -119,29 +118,24 @@ var drawPage = function() {
 
 }
 
+
+
+
 var countDownTimer = function (startStop) {
-
-    switch (startStop) {
-
-        case true:
     
-            var i = timeRemaining
+    
 
-            var myTimer = function(){
-         
-                cardTimeValue.textContent = i;
-                i--;
-
-            }
-
-            var oneSecondInterval = setInterval(myTimer, 1000);
-
-        break;
-
-        case false:
-
-            clearInterval(oneSecondInterval);
+    var myTimer = function(){
+        
+        cardTimeValue.textContent = timeRemaining;
+        timeRemaining--;
     }
+
+    if (!startStop){
+        clearInterval(oneSecondInterval);
+    }
+
+    var oneSecondInterval = setInterval(myTimer, 1000);
 }
 
 var createHighScoresDivs = function() {
@@ -190,9 +184,11 @@ var startStop = function (event) {
             
                 gameState ="countDown";
                 console.log(gameState);
+                countDownTimer(true);
+
                 break;
             case "countDown":
-            
+                countDownTimer(false);
                 gameState ="gamePlay";
                 console.log(gameState);
             break;
