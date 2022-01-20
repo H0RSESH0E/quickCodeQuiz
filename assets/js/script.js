@@ -3,21 +3,48 @@
 var object = {
 
     displayState: {
-        titleCard: [" "],
-        newGame: ["Would you like to play a game?", "It will test your knowledge of HTML, CSS and JavaScript.", "Press start or stop at any time."],
-        countDown: ["Get ready.", "Get set.", "Go!"],
-        gamePlay:["Question: ", "Please click on your response:", "Your last response was:"],
-        resultsAndDetails: ["Let's see how you did.", "Great Job!", "Click here to save and see the high scores.", "Better luck next time."],
-        highScores: ["Here are the high scores:"]
+        titleCard: {
+            cardTitle: "JavaScript Quiz",
+            bodyParagrah: "Test your knowledge of JavaScript code.",
+            footerParagraph: "Press Start or Stop at any time."
+        },
+        newGame: {
+            cardTitle: "The Rules:",
+            bodyParagrah: "You get time to answer every question, but answer correctly or you will have time taken away.",
+            footerParagraph:"You will get feedback here."
+        },
+        
+        countDown: {
+            cardTitle: "Get Ready!",
+            bodyParagrah: "",
+            footerParagraph: ""
+        },
+
+        gamePlay: {
+            cardTitle: "",
+            bodyParagrah: "",
+            footerParagraph: ""
+        },
+        
+        resultsAndDetails: {
+            cardTitle: "You scored: ",
+            bodyParagrah: "",
+            footerParagraph: "Enter your initials: "
+        },
+
+        highScores: {
+            cardTitle: "High Scores",
+            bodyParagrah: "",
+            footerParagraph: "Sometimes the best move is not to play."
+        },
     },
 
-    // gameState values must equal the display state array names
+    // gameState values must equal the displayState object names
     gameState: "titleCard",
 
     gameDynamics: {
         timePerQuestion: 15,
         timeDemerit: 20,
-        
     },
     
     highScores: [
