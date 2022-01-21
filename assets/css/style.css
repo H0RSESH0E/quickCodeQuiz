@@ -27,10 +27,10 @@
   
 }
 
-/* * {
-    border: 2px dotted rgb(0, 204, 255);
-    background-color: rgba(35, 13, 160, 0.137);
-}  */
+* {
+    border: 2px dotted rgba(0, 204, 255, 0.219);
+    background-color: rgba(51, 15, 253, 0.048);
+}  
   
 @font-face {
     font-family: 'cache';
@@ -60,7 +60,6 @@ body {
 #whole-page {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 100%;
     backdrop-filter: blur(12px);
 
@@ -70,6 +69,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 20%;
     font-size: 8vh;
     line-height: 0.1;
     letter-spacing: 4vh;
@@ -77,6 +77,23 @@ header {
     color: yellow;
     text-shadow: 2px 2px 0px var(--color-two), 3px 3px 0px var(--color-two), 2px 2px 5px var(--color-two);
 
+}
+
+main {
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70%;
+
+}
+
+footer {
+    display: flex;
+    height: 10%;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1vh;
 }
 
 footer img {
@@ -87,11 +104,11 @@ footer img {
 .btn {
         border-radius: 50%;
         padding: 0.1vh;
-        font-size: 2.5vh;
-        margin: 1vh;
+        font-size: 2.2vh;
+        margin: 0.7vh;
         box-shadow: 1px 1px 10px var(--color-two);
-        height: 12vh;
-        width: 12vh;
+        height: 8vh;
+        width: 8vh;
 
     
 }
@@ -105,30 +122,19 @@ footer img {
     background-color: rgb(108, 227, 231);
 }
 
-footer {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1vh;
-}
 
 
-footer div {
-    display: flex;
-    justify-content: space-between;
-    width: 15%;
-}
 
-main {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    height: 80%;
 
+
+
+.gutter {
+    flex-basis: 15%;
+    flex-shrink: 3;
 }
 
 #displayCard {
-    display: flexbox;
+    display: flex;
     flex-direction: column;
     line-height: 1;
     justify-content: flex-start;
@@ -138,11 +144,73 @@ main {
     border-radius: 5vh;
     box-shadow: var(--shadow);
     color:var(--color-three);
+    margin: 0;
+    flex-basis: 70%;
+    
+    
+}
+
+#cardHeader {
+
+    display: flex;
+    
+    justify-content: space-around;
+    width: 95%;
+    height: 20%;
+}
+
+#cardTitle {
+    flex-wrap: wrap;
+    min-width: 60%;
+    padding: 1%;
+    margin: 1vh 0 0 2vw;
+    flex-shrink: 1;
+    flex-grow: 0;
+}
+
+#cardTime {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1vh 2vw 0 0;
+    min-width: 40%;
+    
+}
+
+#cardTimeTitle {
+    height: 40%;
+    white-space: nowrap;
+    flex-shrink: 3;
+
+}
+
+#cardTimeValue {
+    height: 50%;
+    flex-shrink: 3;
+}
+
+#cardBody {
+    display: flex;
+    
+    height: 60%;
+    margin: 0 2vw 0 2vw;
+}
+
+#cardBody p {
+
+}
+
+#cardFooter {
+    display: flex;
+    height: 15%;
+    width: 100%;
+    color:var(--color-three);
 }
 
 h2 {
-    margin: 6vh;
-    font-size: 150%;
+    margin:0;
+    font-size: 100%;
     color: var(--color-three);
     font-weight: normal;
 }
@@ -161,21 +229,8 @@ ul {
     
 }
 
-#cardFooter {
-    align-self: flex-end;
-
-    width 80%;
-    
-    color:var(--color-three);
-}
-
-
-
 p {
-   
-    color:var(--color-three);
-    margin: 55px;
-
+   color:var(--color-three);
 }
 
 #highScoreContainer {
@@ -217,3 +272,33 @@ p {
     color: rgb(3, 20, 3) !important;
 
 }
+
+#footerParagraph {
+
+    display: flex;
+    margin: 0 2vw 0 2vw;
+    justify-content: flex-start;
+    align-items: center;
+    width: 95%;
+
+}
+
+#cardTime {
+    margin: 0px;
+}
+
+#cardTime p {
+    margin: 1vh 0 0 0;
+}
+
+@media screen {
+    
+}
+
+@media only screen and (max-width: 400px) {
+    body {
+      font-size: 60%;
+    }
+ 
+  }
+  

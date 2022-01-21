@@ -5,36 +5,45 @@ var object = {
     displayState: {
         titleCard: {
             cardTitle: "JavaScript Quiz",
-            bodyParagrah: "Test your knowledge of JavaScript code.",
+            bodyParagraph: "Test your knowledge of JavaScript code.",
             footerParagraph: "Press Start or Stop at any time."
         },
         newGame: {
             cardTitle: "The Rules:",
-            bodyParagrah: "You get time to answer every question, but answer correctly or you will have time taken away.",
-            footerParagraph:"You will get feedback here."
+            bodyParagraph: "You get time to answer every question, but answer correctly or you will have time taken away.",
+            footerParagraph:"You'll get some feedback here.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
         },
         
         countDown: {
-            cardTitle: "Get Ready!",
-            bodyParagrah: "The game is about to begin.",
-            footerParagraph: "... "
+            cardTitle: "Get Ready.",
+            bodyParagraph: "The game is about to begin.",
+            footerParagraph: "Go!",
+            cardTimeTitle: "get set.",
+            cardTimeValue: ""
+
         },
 
         gamePlay: {
             cardTitle: "",
-            bodyParagrah: "",
-            footerParagraph: ""
+            bodyParagraph: "",
+            footerParagraph: "",
+            cardTimeTitle: "Time remaining:",
+            cardTimeValue: ""
         },
         
         resultsAndDetails: {
             cardTitle: "You scored: ",
-            bodyParagrah: "",
-            footerParagraph: "Enter your initials: "
+            bodyParagraph: "",
+            footerParagraph: "Enter your initials: ",
+            cardTimeTitle: "",
+            cardTimeValue: ""
         },
 
         highScores: {
             cardTitle: "High Scores",
-            bodyParagrah: "",
+            bodyParagraph: "",
             footerParagraph: "Sometimes the best move is not to play."
         },
     },
@@ -86,7 +95,8 @@ var object = {
     
 }
 
-var buttons = document.querySelector("#start-stop-buttons");
+var stopBtn = document.querySelector("#stop-btn");
+var startBtn = document.querySelector("#start-btn");
 var screen = document.querySelector("#displayCard");
 var cardTitle = document.querySelector("#cardTitle");
 var cardTimeTitle = document.querySelector("#cardTimeTitle");
@@ -95,7 +105,7 @@ var cardBody = document.querySelector("#cardBody");
 var footerParagraph = document.querySelector("#footerParagraph");
 
 var numberOfQuestions = Object.keys(object.gamePlayContent).length;
-var timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
+var timeRemaining = 3;
 
 var gameState = "titleCard";
 var qCount = 0;
@@ -103,34 +113,132 @@ var userScore = 0;
 var lastScore = "";
 var lastPlayer = "";
 var x;
+var y;
+
+
+var populateDisplayStateGamePlay = function () {
+    console.log("114")
+    cardBody.innerHTML = "";
+    
+    if (qCount < numberOfQuestions) {
+
+        object.displayState.gamePlay.cardTitle = object.gamePlayContent[qCount].stem;
+
+    var qUl = document.createElement("ul");
+    cardBody.appendChild(qUl);
+    
+        for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
+
+            var option = document.createElement("li");
+            qUl.appendChild(option);
+            option.setAttribute("id", "option" + i);
+            option.className ="link";
+            option.textContent = object.gamePlayContent[qCount].responseOptions[i];
+        }        
+    }
+}
 
 
 var drawPage = function() {
+
+    if (gameState === "countDown") {
+        
+        cardBody.textContent = object.displayState[gameState].bodyParagraph;
+        x = setInterval(ignitionCountDown, 500, "countDown");
+
+    } else if (gameState === "gamePlay") {
+
+  
+        populateDisplayStateGamePlay();
+
+    } else {
+
+    cardBody.textContent = object.displayState[gameState].bodyParagraph;
    
+    }
+
     cardTitle.textContent = object.displayState[gameState].cardTitle;
 
     cardTimeTitle.textContent = object.displayState[gameState].cardTimeTitle;
 
     cardTimeValue.textContent = object.displayState[gameState].cardTimeValue;
 
-    cardBody.textContent = object.displayState[gameState].cardBody;
-
     footerParagraph.textContent = object.displayState[gameState].footerParagraph;
-
 }
 
-
-var myCountDownFunction = function() {
-
-    console.log("I'm running");
-    console.log(timeRemaining);
-    cardTimeValue.textContent = timeRemaining;
-    timeRemaining--;
+var ignitionCountDown = function(current) {
     
+    console.log("var ignitionCountDown 173");
+    console.log(current);
 
-};
+    if (timeRemaining === -1) {
+        console.log(gameState, current, " <------182-------");
+        clearInterval(x);
+        gameState = "gamePlay";
+        timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
+        y = setInterval(gameCountDown, 100, "gamePlay");
+        drawPage(gameState); 
+    }
 
+    if (current !== gameState) {
+        clearInterval(x);
+        switch (gameState) {
+            case "newGame":
+                timeRemaining = 3;
+                drawPage(gameState);
+                return;
+            case "gamePlay":
+                console.log(gameState, current, " <------197-------");
+                timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
+                y = setInterval(gameCountDown, 100, "gamePlay");
+                drawPage(gameState);
+                return;
+        }
+        
+    }
 
+   cardTimeValue.textContent = timeRemaining;
+   timeRemaining --;
+}
+
+var gameCountDown = function(current) {
+
+    console.log("var gameCountDown 213");
+    console.log(current);
+
+   if (timeRemaining === -1) {
+        console.log(gameState, current, " <------217-------");
+        clearInterval(y);
+        gameState = "resultsAndDetails";
+        timeRemaining = 3;
+        drawPage(gameState);
+        return;
+   }
+
+    if (gameState !== "gamePlay") {
+
+        clearInterval(y);
+        console.log(" cleared?????");
+        switch (gameState) {
+            case "titleCard":
+                timeRemaining = 3;
+                drawPage(gameState);
+                break;
+                return;
+            case "resultsAndDetails":
+                console.log(gameState, current, " <------233-------");
+                timeRemaining = 3;
+                drawPage(gameState);
+                return;
+                
+        }
+    
+    }
+  
+   cardTimeValue.textContent = timeRemaining;
+   timeRemaining --;
+
+}
 
 var createHighScoresDivs = function() {
 
@@ -163,129 +271,99 @@ var createHighScoresDivs = function() {
     }
 }
 
-var startStop = function (event) {
-    console.log(event.target);
+var startStopBtnHandler = function (event) {
+    console.log(event.target, " 266");
 
     if (event.target.matches("#start-btn")) {
     
         switch(gameState) {
             case "titleCard":
-            
                 gameState = "newGame";
-                console.log(gameState);
                 break;
             case "newGame":
-            
                 gameState ="countDown";
-                console.log(gameState);
-                timeRemaining = 3;
-                setInterval(myCountDownFunction,1000)
                 break;
             case "countDown":
-                clearInterval(myCountDownFunction);
-                // timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
                 gameState ="gamePlay";
-                console.log(gameState);
             break;
             case "gamePlay":
-                var conf = window.confirm("Are you sure you want to start again?")
+                var conf = window.confirm("Are you sure you want to restart without seeing your resuts?")
                 if (conf) {
                     gameState ="titleCard";
-                    console.log(gameState, "9999999");
-                    clearInterval(myCountDownFunction);
                 }
             break;
             case "resultsAndDetails":
-            
                 gameState ="highScores";
-                qCount = 0;
-                console.log(gameState);
             break;
             case "highScores":
-            
                 gameState ="newGame";
-                qCount = 0;
-                console.log(gameState);
             break;
-
             default:
             break;
-
         }
     } else if (event.target.matches("#stop-btn")) {
         switch(gameState) {
             case "titleCard":
-            
                 gameState = "titleCard";
-                console.log(gameState);
                 break;
             case "newGame":
-            
                 gameState ="titleCard";
-                console.log(gameState);
                 break;
             case "countDown":
-            
                 gameState ="newGame";
-                console.log(gameState);
             break;
             case "gamePlay":
                 var conf = window.confirm("Are you sure you want to stop now?")
                 if (conf) {
                     gameState ="resultsAndDetails";
-                    console.log(gameState);
-                    clearInterval(myCountDownFunction);
                 }
-                
             break;
             case "resultsAndDetails":
-            
                 gameState ="highScores";
-                console.log(gameState);
             break;
             case "highScores":
-            
                 gameState ="titleCard";
-                qCount = 0;
-                console.log(gameState);
             break;
-
             default:
-
         } 
     }
-    
-    
-    drawPage(gameState)
+    drawPage(gameState);
 } 
-
 
 var gameAdvance = function(mark) {
 
-    console.log(mark);
+    console.log(mark, " 316");
     console.log("SUCCESS!!!!!");
+
+    if (mark === -1) {
+        console.log("yessss!!!!! 322")
+        return;
+    }
+    else if (mark === -2) {
+        gameState = "resultsAndDetails";
+        return;
+    }
+
     qCount++;
     if (mark) {
         userScore++;
-        object.displayState.gamePlay[2] = "Your last response was: CORRECT.";
+        object.displayState.gamePlay.footerParagraph = "Your last response was: CORRECT.";
     }
     else {
         timeRemaining -= object.gameDynamics.timeDemerit;
-        object.displayState.gamePlay[2] = "Your last response was: INCORRECT.";
+        object.displayState.gamePlay.footerParagraph = "Your last response was: INCORRECT.";
     }
     if (qCount === numberOfQuestions) {
-        object.displayState.gamePlay[0] = "You've completed the quiz.";
-        object.displayState.gamePlay[1] = "Click here to see your results.";
+        object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
+        object.displayState.gamePlay.bodyParagrah = "Click here to see your results.";
         
     }
-    drawPage(object.gameState)
-
 }
 
 var responseValidator = function(questionIndex, responseIndex) {
 
     // get the index number for the correct response from the database and compare it to the user's response
-    console.log("partway........")
+    console.log("partway........ 354")
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
     if (answerCheck === responseIndex) {
         return true;
@@ -297,13 +375,13 @@ var responseValidator = function(questionIndex, responseIndex) {
 }
 
 var updateHighScores = function(newRecordArray) {
-    console.log(object.highScores, " are the highscores to begin with");
+    console.log(object.highScores, " are the highscores to begin with 366");
     console.log(newRecordArray," is the newRecordArray to begin with");
     var tempArray = [];
     var inserted = false;
 
     for (var i = 0; i < 10; i++) {
-        console.log(tempArray);
+        console.log(tempArray, " 372");
         console.log(i, " loops so far");
         
         if (inserted) {
@@ -322,19 +400,18 @@ var updateHighScores = function(newRecordArray) {
     object.highScores = tempArray;
     userScore = 0;
 
-    console.log(newRecordArray," is the newRecordArray");
+    console.log(newRecordArray," is the newRecordArray 391");
     console.log(object.highScores, " are the highscores arrays888888888");
 
 }
 
-
-var quizResponseHandler = function(event) {
+var userClickResponseHandler = function(event) {
     event.preventDefault();
 
     // get target element from event
     var targetElId = event.target.getAttribute("id");
     var targetEltext = event.target.textContent;
-    console.log("Log Strikes Back!!! ", targetEltext) ;
+    console.log("Log Strikes Back!!! -- 403-- ", targetEltext) ;
     console.log("I'm alive!", targetElId);
 
     switch (targetElId) {
@@ -387,7 +464,6 @@ var quizResponseHandler = function(event) {
     }
 }
 
-
 var highlightLinkText = function (event) {
 
     var targetElement = event.target;
@@ -406,11 +482,16 @@ var unhighlightLinkText = function (event) {
 
 }
 
+// Function call begins the application
 drawPage(gameState);
 
-buttons.addEventListener("click", startStop);
 
-screen.addEventListener("click", quizResponseHandler)
+// User interaction monitors
+
+stopBtn.addEventListener("click", startStopBtnHandler);
+startBtn.addEventListener("click", startStopBtnHandler);
+
+screen.addEventListener("click", userClickResponseHandler)
 
 screen.onmouseover = highlightLinkText;
 screen.onmouseout = unhighlightLinkText;
