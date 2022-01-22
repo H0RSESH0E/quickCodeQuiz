@@ -6,36 +6,38 @@ var object = {
         titleCard: {
             cardTitle: "JavaScript Quiz",
             bodyParagraph: "Test your knowledge of JavaScript code.",
-            footerParagraph: "Press Start or Stop at any time."
+            footerParagraph: "Press Start or Stop at any time.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
         },
         newGame: {
             cardTitle: "The Rules:",
             bodyParagraph: "You get time to answer every question, but answer correctly or you will have time taken away.",
-            footerParagraph:"You'll get some feedback here.",
+            footerParagraph: "You'll get some feedback here.",
             cardTimeTitle: "",
             cardTimeValue: ""
         },
-        
+
         countDown: {
-            cardTitle: "Get Ready.",
-            bodyParagraph: "The game is about to begin.",
-            footerParagraph: "Go!",
-            cardTimeTitle: "get set.",
+            cardTitle: "Are you ready?",
+            bodyParagraph: "",
+            footerParagraph: "",
+            cardTimeTitle: "",
             cardTimeValue: ""
 
         },
 
         gamePlay: {
             cardTitle: "",
-            bodyParagraph: "",
+            bodyParagraph: "Select your response: ",
             footerParagraph: "",
             cardTimeTitle: "Time remaining:",
             cardTimeValue: ""
         },
-        
+
         resultsAndDetails: {
             cardTitle: "You scored: ",
-            bodyParagraph: "",
+            bodyParagraph: "Results",
             footerParagraph: "Enter your initials: ",
             cardTimeTitle: "",
             cardTimeValue: ""
@@ -44,17 +46,22 @@ var object = {
         highScores: {
             cardTitle: "High Scores",
             bodyParagraph: "",
-            footerParagraph: "Sometimes the best move is not to play."
+            footerParagraph: "Sometimes the best move is not to play.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
         },
     },
 
     gameDynamics: {
-        timePerQuestion: 15,
-        timeDemerit: 20,
+        timePerQuestion: 60,
+        timeDemerit: 15,
+        gameClockSpeed: 200,
+        countDownLength: 5,
+        pointsForCorrect: 5
     },
-    
+
     highScores: [
-        
+
         ["DB", 100],
         ["AAA", 0],
         ["AAA", 0],
@@ -91,8 +98,8 @@ var object = {
 
         }
 
-    ]    
-    
+    ]
+
 }
 
 var stopBtn = document.querySelector("#stop-btn");
@@ -102,11 +109,15 @@ var cardTitle = document.querySelector("#cardTitle");
 var cardTimeTitle = document.querySelector("#cardTimeTitle");
 var cardTimeValue = document.querySelector("#cardTimeValue");
 var cardBody = document.querySelector("#cardBody");
+var cardBodyParagraph = document.querySelector("#bodyParagraph");
+var cardUl = document.querySelector("#cardUl");
 var footerParagraph = document.querySelector("#footerParagraph");
 
 var numberOfQuestions = Object.keys(object.gamePlayContent).length;
-var timeRemaining = 3;
+var timeRemaining = object.gameDynamics.countDownLength;
+object.displayState.countDown.cardTimeValue = timeRemaining;
 
+var startTime = Date.now();
 var gameState = "titleCard";
 var qCount = 0;
 var userScore = 0;
@@ -114,47 +125,43 @@ var lastScore = "";
 var lastPlayer = "";
 var x;
 var y;
+var then;
+var now;
+var cycle;
+var speed = object.gameDynamics.gameClockSpeed;
+
+var populateCardUl = function () {
+    // // debugger;
+    cardUl.innerHTML = "";
 
 
-var populateDisplayStateGamePlay = function () {
-    console.log("114")
-    cardBody.innerHTML = "";
-    
     if (qCount < numberOfQuestions) {
 
         object.displayState.gamePlay.cardTitle = object.gamePlayContent[qCount].stem;
 
-    var qUl = document.createElement("ul");
-    cardBody.appendChild(qUl);
-    
         for (var i = 0; i < object.gamePlayContent[qCount].responseOptions.length; i++) {
 
             var option = document.createElement("li");
-            qUl.appendChild(option);
+            cardUl.appendChild(option);
             option.setAttribute("id", "option" + i);
-            option.className ="link";
+            option.className = "link";
             option.textContent = object.gamePlayContent[qCount].responseOptions[i];
-        }        
+        }
     }
 }
 
+var dePopulateCardUl = function () {
 
-var drawPage = function() {
+    cardUl.innerHTML = "";
+}
 
-    if (gameState === "countDown") {
-        
-        cardBody.textContent = object.displayState[gameState].bodyParagraph;
-        x = setInterval(ignitionCountDown, 500, "countDown");
+var drawPage = function () {
 
-    } else if (gameState === "gamePlay") {
-
-  
-        populateDisplayStateGamePlay();
-
-    } else {
-
-    cardBody.textContent = object.displayState[gameState].bodyParagraph;
-   
+    if (gameState === "gamePlay") {
+        populateCardUl();
+    }
+    else {
+        dePopulateCardUl();
     }
 
     cardTitle.textContent = object.displayState[gameState].cardTitle;
@@ -163,85 +170,136 @@ var drawPage = function() {
 
     cardTimeValue.textContent = object.displayState[gameState].cardTimeValue;
 
+    cardBodyParagraph.textContent = object.displayState[gameState].bodyParagraph;
+
     footerParagraph.textContent = object.displayState[gameState].footerParagraph;
 }
 
-var ignitionCountDown = function(current) {
-    
-    console.log("var ignitionCountDown 173");
-    console.log(current);
+var ignitionCountDown = function (current) {
 
-    if (timeRemaining === -1) {
-        console.log(gameState, current, " <------182-------");
+    console.log("ignitionCountDown is running");
+
+    if (timeRemaining <= -1) {
         clearInterval(x);
+        object.displayState[gameState].cardTimeValue = "";
         gameState = "gamePlay";
         timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
-        y = setInterval(gameCountDown, 100, "gamePlay");
-        drawPage(gameState); 
+        then = Date.now();
+        y = setInterval(gameCountDown, speed, "gamePlay");
+        drawPage();
+        return;
     }
 
     if (current !== gameState) {
+        object.displayState[gameState].cardTimeValue = "";
         clearInterval(x);
+        object.displayState.countDown.cardTitle = "Are you ready?";
+        object.displayState.countDown.cardTimeTitle = "";
+        object.displayState.countDown.bodyParagraph = "";
+        object.displayState.countDown.footerParagraph = "";
+
         switch (gameState) {
             case "newGame":
-                timeRemaining = 3;
-                drawPage(gameState);
+                timeRemaining = object.gameDynamics.countDownLength;
+                object.displayState.countDown.cardTimeValue = object.gameDynamics.countDownLength;
+
+                drawPage();
                 return;
             case "gamePlay":
-                console.log(gameState, current, " <------197-------");
                 timeRemaining = object.gameDynamics.timePerQuestion * numberOfQuestions;
-                y = setInterval(gameCountDown, 100, "gamePlay");
-                drawPage(gameState);
+                object.displayState.countDown.cardTimeValue = object.gameDynamics.countDownLength;
+                then = Date.now();
+                y = setInterval(gameCountDown, speed, "gamePlay");
+                drawPage();
                 return;
         }
-        
+
     }
 
-   cardTimeValue.textContent = timeRemaining;
-   timeRemaining --;
+    if (timeRemaining === 0 && gameState === "countDown") {
+
+       
+        object.displayState[gameState].cardTimeTitle = "";
+        object.displayState[gameState].cardTimeValue = "";
+        object.displayState[gameState].bodyParagraph = "Go!";
+        drawPage();
+
+    }
+    // else if ( timeRemaining === 1 && gameState === "countDown") {
+
+    //     object.displayState[gameState].cardTimeTitle = "";
+    //     object.displayState.countDown.cardTimeValue = timeRemaining;
+    //     cardTimeValue.textContent = timeRemaining;
+    //     drawPage();
+    // }
+    else if ( timeRemaining === (object.gameDynamics.countDownLength - 1) && gameState === "countDown"){
+
+        object.displayState[gameState].cardTitle = "";
+        object.displayState[gameState].cardTimeTitle = "Get Set!";
+        object.displayState[gameState].cardTimeValue = timeRemaining;
+        cardTimeValue.textContent = timeRemaining;
+        drawPage();
+    }
+    else {
+    object.displayState.countDown.cardTimeValue = timeRemaining;
+    cardTimeValue.textContent = timeRemaining;
+    }
+
+    timeRemaining--;
+    console.log(timeRemaining);
 }
 
-var gameCountDown = function(current) {
+var gameCountDown = function (current) {
 
-    console.log("var gameCountDown 213");
-    console.log(current);
+    console.log("gameCountDown is running");
 
-   if (timeRemaining === -1) {
-        console.log(gameState, current, " <------217-------");
+
+    now = Date.now()
+    var elapsedTime = ((now - then)/1000).toFixed(3);
+    var timeRecord = timeRemaining - elapsedTime;
+    cardTimeValue.textContent = timeRecord.toFixed(2);
+
+    var resultsUpdate = function () {
+
+        if (timeRecord > 1) {
+            object.displayState.resultsAndDetails.bodyParagraph = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord + " seconds remaining.";
+        }
+        else {
+            object.displayState.resultsAndDetails.bodyParagraph = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord + " of a second remaining.";
+        }
+    }
+
+    if (qCount === numberOfQuestions) {
+
+        cardTimeValue.textContent = "",
         clearInterval(y);
-        gameState = "resultsAndDetails";
+        resultsUpdate();
+    }
+
+    if (timeRemaining <= -1) {
+
+        cardTimeValue.textContent = "",
+        resultsUpdate();
+        clearInterval(y);
         timeRemaining = 3;
-        drawPage(gameState);
+        gameAdvance()
         return;
-   }
+    }
 
     if (gameState !== "gamePlay") {
 
+        cardTimeValue.textContent = "",
+        resultsUpdate();
         clearInterval(y);
-        console.log(" cleared?????");
-        switch (gameState) {
-            case "titleCard":
-                timeRemaining = 3;
-                drawPage(gameState);
-                break;
-                return;
-            case "resultsAndDetails":
-                console.log(gameState, current, " <------233-------");
-                timeRemaining = 3;
-                drawPage(gameState);
-                return;
-                
-        }
-    
-    }
-  
-   cardTimeValue.textContent = timeRemaining;
-   timeRemaining --;
+        timeRemaining = 3;
+        drawPage();
+        return;
 
+    }
 }
 
-var createHighScoresDivs = function() {
-
+var createHighScoresDivs = function () {
+    // // debugger;
     var divDisplay = document.createElement("div");
     cardBody.appendChild(divDisplay);
 
@@ -260,7 +318,7 @@ var createHighScoresDivs = function() {
                     column0.appendChild(div);
                     div.textContent = object.highScores[i][d];
                     div.className = "users-initials"
-                break;
+                    break;
                 case 1:
                     var div = document.createElement("div");
                     column0.appendChild(div);
@@ -273,122 +331,115 @@ var createHighScoresDivs = function() {
 
 var startStopBtnHandler = function (event) {
     console.log(event.target, " 266");
-
+    // // debugger;
     if (event.target.matches("#start-btn")) {
-    
-        switch(gameState) {
+
+        switch (gameState) {
             case "titleCard":
                 gameState = "newGame";
                 break;
             case "newGame":
-                gameState ="countDown";
+                gameState = "countDown";
+                    x = setInterval(ignitionCountDown, 1000, "countDown");
                 break;
             case "countDown":
-                gameState ="gamePlay";
-            break;
+                gameState = "gamePlay";
+                break;
             case "gamePlay":
                 var conf = window.confirm("Are you sure you want to restart without seeing your resuts?")
                 if (conf) {
-                    gameState ="titleCard";
+                    gameState = "titleCard";
                 }
-            break;
+                break;
             case "resultsAndDetails":
-                gameState ="highScores";
-            break;
+                gameState = "highScores";
+                break;
             case "highScores":
-                gameState ="newGame";
-            break;
+                gameState = "newGame";
+                break;
             default:
-            break;
+                break;
         }
     } else if (event.target.matches("#stop-btn")) {
-        switch(gameState) {
+        switch (gameState) {
             case "titleCard":
                 gameState = "titleCard";
                 break;
             case "newGame":
-                gameState ="titleCard";
+                gameState = "titleCard";
                 break;
             case "countDown":
-                gameState ="newGame";
-            break;
+                gameState = "newGame";
+                break;
             case "gamePlay":
                 var conf = window.confirm("Are you sure you want to stop now?")
                 if (conf) {
-                    gameState ="resultsAndDetails";
+                    gameState = "resultsAndDetails";
                 }
-            break;
+                break;
             case "resultsAndDetails":
-                gameState ="highScores";
-            break;
+                gameState = "highScores";
+                break;
             case "highScores":
-                gameState ="titleCard";
-            break;
+                gameState = "titleCard";
+                break;
             default:
-        } 
+        }
     }
-    drawPage(gameState);
-} 
+    drawPage();
+}
 
-var gameAdvance = function(mark) {
 
-    console.log(mark, " 316");
-    console.log("SUCCESS!!!!!");
+var gameAdvance = function (mark) {
+    // // debugger;
 
-    if (mark === -1) {
-        console.log("yessss!!!!! 322")
-        return;
-    }
-    else if (mark === -2) {
-        gameState = "resultsAndDetails";
-        return;
+    
+
+    if (timeRemaining <= 0) {
+
+        object.displayState.gamePlay.cardTitle = "GAME OVER";
+        object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
+        cardBodyParagraph.className = "link";
     }
 
-    qCount++;
-    if (mark) {
-        userScore++;
-        object.displayState.gamePlay.footerParagraph = "Your last response was: CORRECT.";
-    }
-    else {
-        timeRemaining -= object.gameDynamics.timeDemerit;
-        object.displayState.gamePlay.footerParagraph = "Your last response was: INCORRECT.";
-    }
-    if (qCount === numberOfQuestions) {
+    if (qCount === numberOfQuestions - 1) {
         object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
-        object.displayState.gamePlay.bodyParagrah = "Click here to see your results.";
-        
+        object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
+        cardBodyParagraph.className = "link";
     }
 }
 
-var responseValidator = function(questionIndex, responseIndex) {
+var responseValidator = function (questionIndex, responseIndex) {
 
-    // get the index number for the correct response from the database and compare it to the user's response
-    console.log("partway........ 354")
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
+
     if (answerCheck === responseIndex) {
-        return true;
+        userScore++;
+        object.displayState.gamePlay.footerParagraph = "Your last response was: CORRECT.  + plus: " + object.gameDynamics.pointsForCorrect + " points!";
     }
     else {
-        return false;
+        console.log(object.gameDynamics.timeDemerit);
+        timeRemaining -= object.gameDynamics.timeDemerit;
+        object.displayState.gamePlay.footerParagraph = "Your last response was: INCORRECT.  - minus: " + object.gameDynamics.timeDemerit + " seconds.";
     }
 
 }
 
-var updateHighScores = function(newRecordArray) {
+var updateHighScores = function (newRecordArray) {
     console.log(object.highScores, " are the highscores to begin with 366");
-    console.log(newRecordArray," is the newRecordArray to begin with");
+    console.log(newRecordArray, " is the newRecordArray to begin with");
     var tempArray = [];
     var inserted = false;
 
     for (var i = 0; i < 10; i++) {
         console.log(tempArray, " 372");
         console.log(i, " loops so far");
-        
+
         if (inserted) {
             tempArray.push(object.highScores[i]);
         }
         else {
-            
+
             if (newRecordArray[1] >= object.highScores[i][1]) {
                 tempArray.push(newRecordArray);
                 tempArray.push(object.highScores[i]);
@@ -400,87 +451,88 @@ var updateHighScores = function(newRecordArray) {
     object.highScores = tempArray;
     userScore = 0;
 
-    console.log(newRecordArray," is the newRecordArray 391");
+    console.log(newRecordArray, " is the newRecordArray 391");
     console.log(object.highScores, " are the highscores arrays888888888");
 
 }
 
-var userClickResponseHandler = function(event) {
+var userClickResponseHandler = function (event) {
     event.preventDefault();
+
+    console.log("Zimmer");
+    console.log(qCount, " is the qCount");
 
     // get target element from event
     var targetElId = event.target.getAttribute("id");
     var targetEltext = event.target.textContent;
-    console.log("Log Strikes Back!!! -- 403-- ", targetEltext) ;
-    console.log("I'm alive!", targetElId);
+    console.log("Log Strikes Back!!! -- 403-- ", targetEltext);
+
 
     switch (targetElId) {
         case "option0":
             console.log("option00000", targetElId);
             gameAdvance(responseValidator(qCount, "0"));
+            qCount++;
             break;
         case "option1":
             console.log("option111111", targetElId);
             gameAdvance(responseValidator(qCount, "1"));
+            qCount++;
             break;
         case "option2":
             console.log("option222222", targetElId);
             gameAdvance(responseValidator(qCount, "2"));
+            qCount++;
             break;
         case "option3":
             console.log("option33333", targetElId);
             gameAdvance(responseValidator(qCount, "3"));
+            qCount++;
             break;
         default:
-        break;
+            break;
     }
-    console.log(object.gameState);
 
     if (targetEltext === "Click here to see your results.") {
-        console.log(object.gameState, "Yeah Hoo!");
-        object.gameState = "resultsAndDetails";
-        drawPage(object.gameState);
+        gameState = "resultsAndDetails";
+        cardBodyParagraph.className = "";
+        drawPage();
         return;
-    }
-    console.log(targetElId, "Ba 999");
-    console.log(targetEltext);
-  
-    if (targetEltext === "Click here to save and see the high scores.") {
     }
 
     if (targetElId === "initials-input") {
-       // Nothing doing
+        // Nothing doing
         console.log("Do Nothing!!")
     }
-    else if (object.gameState === "resultsAndDetails") {
-        console.log(object.gameState, "Yeeee Haw!");
+    else if (gameState === "resultsAndDetails") {
         lastPlayer = document.querySelector("input").value.toUpperCase();
         console.log(lastPlayer);
         var newRecordArray = [lastPlayer, userScore];
-        updateHighScores (newRecordArray);
-        console.log("BA BA Ba 999 !!!!")
-        object.gameState = "highScores";
-        drawPage(object.gameState);
+        updateHighScores(newRecordArray);
+        gameState = "highScores";
+        drawPage();
     }
+    drawPage();
 }
 
 var highlightLinkText = function (event) {
 
-    var targetElement = event.target;
-  
-    
-    targetElement.classList.toggle("highlight");
-   
+    var targetEl = event.target;
+
+    targetEl.classList.toggle("highlight");
+
 }
 
 var unhighlightLinkText = function (event) {
-    var targetElement = event.target;
-   
-    
-    targetElement.classList.toggle("highlight");
-    
+
+    var targetEl = event.target;
+
+    targetEl.classList.toggle("highlight");
 
 }
+
+
+// // debugger;
 
 // Function call begins the application
 drawPage(gameState);

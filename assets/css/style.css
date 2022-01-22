@@ -191,15 +191,11 @@ footer img {
 }
 
 #cardBody {
-    display: flex;
-    
+        
     height: 60%;
     margin: 0 2vw 0 2vw;
 }
 
-#cardBody p {
-
-}
 
 #cardFooter {
     display: flex;
@@ -265,7 +261,7 @@ p {
 }
 
 
-.highlight.link {
+.link.highlight {
 
     font-weight: bolder;
     background-color: var(--color-three);
