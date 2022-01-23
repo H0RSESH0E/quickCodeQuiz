@@ -52,10 +52,62 @@ var object = {
         },
     },
 
+    originalDisplayState: {
+        titleCard: {
+            cardTitle: "JavaScript Quiz",
+            bodyParagraph: "Test your knowledge of JavaScript code.",
+            footerParagraph: "Press Start or Stop at any time.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
+        },
+        newGame: {
+            cardTitle: "The Rules:",
+            bodyParagraph: "You get time to answer every question, but answer correctly or you will have time taken away.",
+            footerParagraph: "You'll get some feedback here.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
+        },
+
+        countDown: {
+            cardTitle: "Are you ready?",
+            bodyParagraph: "",
+            footerParagraph: "",
+            cardTimeTitle: "Countdown to start:",
+            cardTimeValue: ""
+
+        },
+
+        gamePlay: {
+            cardTitle: "",
+            bodyParagraph: "Select your response: ",
+            footerParagraph: "",
+            cardTimeTitle: "Time remaining:",
+            cardTimeValue: ""
+        },
+
+        resultsAndDetails: {
+            cardTitle: "You scored: ",
+            bodyParagraph: "Enter your initials: ",
+            footerParagraph: "Press either button to see the high scores.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
+        },
+
+        highScores: {
+            cardTitle: "High Scores",
+            bodyParagraph: "",
+            footerParagraph: "Sometimes the best move is not to play.",
+            cardTimeTitle: "",
+            cardTimeValue: ""
+        },
+    },
+
+
+
     gameDynamics: {
-        timePerQuestion: 15,
+        timePerQuestion: 25,
         timeDemerit: 15,
-        gameClockSpeed: 400,
+        gameClockSpeed: 3500,
         countDownLength: 5,
         pointsForCorrect: 5
     },
@@ -133,10 +185,10 @@ var speed = object.gameDynamics.gameClockSpeed;
 var populateCardUl = function () {
 
     console.log("populateCardUl");
-    console.log(object);
+    // BONGO
 
     cardUl.innerHTML = "";
-    if (gameState === "gamePlay" && qCount < (numberOfQuestions - 1) && timeRemaining > 0) {
+    if (gameState === "gamePlay" && qCount < (numberOfQuestions) && timeRemaining > 0) {
 
         object.displayState.gamePlay.cardTitle = object.gamePlayContent[qCount].stem;
 
@@ -171,16 +223,29 @@ var populateCardUl = function () {
 var dePopulateCardUl = function () {
 
     console.log("dePopulateCardUl");
-    console.log(object);
+    // BONGO
 
     cardUl.innerHTML = "";
 
 }
 
+var appendInput = function () {
+    var input = document.createElement("input");
+    input.setAttribute("id", "initials-input");
+    cardBody.removeChild(cardBody.lastChild);
+    cardBody.appendChild(input);
+}
+
+var removeInput = function () {
+    cardBody.removeChild(cardBody.lastChild);
+    cardBody.appendChild(cardUl);
+}
+
+
 var drawPage = function () {
 
     console.log("drawPage's game state: ", gameState);
-    console.log(object);
+    // BONGO
 
     if (gameState === "gamePlay" || gameState === "highScores") {
         populateCardUl();
@@ -203,7 +268,7 @@ var drawPage = function () {
 var ignitionCountDown = function (current) {
 
     console.log("ignitionCountDown");
-    console.log(object);
+    // BONGO
 
     if (timeRemaining === 0 && gameState === "countDown") {
 
@@ -274,8 +339,8 @@ var ignitionCountDown = function (current) {
 
 var gameCountDown = function (current) {
 
-    console.log("gameCountDown");
-    console.log(object);
+    console.log("gameCountDown: qCount: ", qCount);
+    // BONGO
 
     now = Date.now()
     var elapsedTime = ((now - then) / 1000).toFixed(3);
@@ -298,21 +363,21 @@ var gameCountDown = function (current) {
         }
     }
 
-    if (qCount === numberOfQuestions -1) {
+    if (qCount === numberOfQuestions) {
         console.log("  qCount = numberOfQuestions  ", qCount, " ", numberOfQuestions);
         cardTimeValue.textContent = "",
-            clearInterval(y);
+        clearInterval(y);
         resultsUpdate();
         gameAdvance();
         drawPage();
     }
 
-    if (timeRecord <= 0) {
+    if (timeRecord <= 0 && qCount < numberOfQuestions) {
         console.log("  time record <=0  ");
         cardTimeValue.textContent = "",
-            clearInterval(y);
+        clearInterval(y);
         resultsUpdate();
-        gameAdvance();
+        gameAdvance("GAME OVER");
         drawPage();
         timeRemaining = object.gameDynamics.countDownLength;
         return;
@@ -334,7 +399,7 @@ var gameCountDown = function (current) {
 var createHighScoresDivs = function () {
 
     console.log("createHighScoresDivs");
-    console.log(object);
+    // BONGO
 
     var divDisplay = document.createElement("div");
     cardBody.appendChild(divDisplay);
@@ -368,7 +433,7 @@ var createHighScoresDivs = function () {
 var startStopBtnHandler = function (event) {
 
     console.log("startStopBtnHandler");
-    console.log(object);
+    // BONGO
 
     if (event.target.matches("#start-btn")) {
 
@@ -392,11 +457,13 @@ var startStopBtnHandler = function (event) {
                 break;
             case "resultsAndDetails":
                 gameState = "highScores";
-                // createHighScoresDivs();
-                // updateHighScores();
+                lastPlayer = document.querySelector("input").value.toUpperCase();
+                var newRecordArray = [lastPlayer, userScore];
+                updateHighScores(newRecordArray);
+                removeInput();
                 break;
             case "highScores":
-                gameState = "newGame";
+                gameState = "titleCard";
                 break;
             default:
                 break;
@@ -420,8 +487,10 @@ var startStopBtnHandler = function (event) {
                 break;
             case "resultsAndDetails":
                 gameState = "highScores";
-                // createHighScoresDivs();
-                // updateHighScores();
+                lastPlayer = document.querySelector("input").value.toUpperCase();
+                var newRecordArray = [lastPlayer, userScore];
+                updateHighScores(newRecordArray);
+                removeInput();
                 break;
             case "highScores":
                 gameState = "titleCard";
@@ -433,15 +502,15 @@ var startStopBtnHandler = function (event) {
 }
 
 
-var gameAdvance = function (mark) {
+var gameAdvance = function (gameOver) {
 
 
-    console.log("gameAdvance");
-    console.log(object);
+    console.log("gameAdvance - mark: ", gameOver);
+    // BONGO
     console.log("# of questions: ", numberOfQuestions);
     console.log("qCount: ", qCount);
 
-    if (qCount < numberOfQuestions - 1) {
+    if (gameOver) {
         console.log("gameAdvance #1");
         dePopulateCardUl();
         object.displayState.gamePlay.cardTitle = "GAME OVER";
@@ -449,7 +518,7 @@ var gameAdvance = function (mark) {
         cardBodyParagraph.className = "link";
     }
 
-    if (qCount === numberOfQuestions - 1) {
+    if (qCount === numberOfQuestions) {
         console.log("gameAdvance #2");
         dePopulateCardUl();
         object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
@@ -460,8 +529,8 @@ var gameAdvance = function (mark) {
 
 var responseValidator = function (questionIndex, responseIndex) {
 
-    console.log("responseValidator");
-    console.log(object);
+    console.log("responseValidator - qCount: ", qCount);
+    // BONGO
 
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
 
@@ -480,7 +549,7 @@ var responseValidator = function (questionIndex, responseIndex) {
 var updateHighScores = function (newRecordArray) {
 
     console.log("updateHighScores");
-    console.log(object);
+    // BONGO
 
     var tempArray = [];
     var inserted = false;
@@ -511,8 +580,8 @@ var updateHighScores = function (newRecordArray) {
 }
 
 var userClickResponseHandler = function (event) {
-    console.log(object);
-    console.log("userClickResponseHandler");
+    // BONGO
+    console.log("userClickResponseHandler - qCount: ", qCount);
 
     event.preventDefault();
 
@@ -524,23 +593,27 @@ var userClickResponseHandler = function (event) {
     switch (targetElId) {
         case "option0":
             console.log("option00000", targetElId);
-            gameAdvance(responseValidator(qCount, "0"));
+            responseValidator(qCount, "0");
             qCount++;
+            gameAdvance();
             break;
         case "option1":
             console.log("option111111", targetElId);
-            gameAdvance(responseValidator(qCount, "1"));
+            responseValidator(qCount, "1");
             qCount++;
+            gameAdvance();
             break;
         case "option2":
             console.log("option222222", targetElId);
-            gameAdvance(responseValidator(qCount, "2"));
+            responseValidator(qCount, "2");
             qCount++;
+            gameAdvance();
             break;
         case "option3":
             console.log("option33333", targetElId);
-            gameAdvance(responseValidator(qCount, "3"));
+            responseValidator(qCount, "3");
             qCount++;
+            gameAdvance();
             break;
         default:
             break;
@@ -549,6 +622,7 @@ var userClickResponseHandler = function (event) {
     if (targetEltext === "Click here to see your results.") {
         gameState = "resultsAndDetails";
         cardBodyParagraph.className = "";
+        appendInput();
         drawPage();
         return;
     }
@@ -563,6 +637,7 @@ var userClickResponseHandler = function (event) {
         var newRecordArray = [lastPlayer, userScore];
         updateHighScores(newRecordArray);
         gameState = "highScores";
+        removeInput();
         drawPage();
     }
     drawPage();
