@@ -154,6 +154,7 @@ var object = {
 
 }
 
+var localHighscores = object.highScores;
 var stopBtn = document.querySelector("#stop-btn");
 var startBtn = document.querySelector("#start-btn");
 var screen = document.querySelector("#displayCard");
@@ -572,6 +573,7 @@ var updateHighScores = function (newRecordArray) {
     };
 
     object.highScores = tempArray;
+    localStorage.setItem("quizHighS", JSON.stringify(object.highScores));
     userScore = 0;
 
     console.log(newRecordArray, " is the newRecordArray 391");
@@ -660,7 +662,21 @@ var unhighlightLinkText = function (event) {
 }
 
 
-// // debugger;
+
+
+
+var loadHighScores = function () {
+
+    var storedScores = JSON.parse(localStorage.getItem("quizHighS"));
+    console.log(storedScores);
+    if (storedScores) {
+        object.highScores = JSON.parse(localStorage.getItem("quizHighS"));
+    }
+}
+
+
+loadHighScores();
+
 
 // Function call begins the application
 drawPage(gameState);
