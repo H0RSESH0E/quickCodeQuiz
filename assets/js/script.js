@@ -351,15 +351,15 @@ var gameCountDown = function (current) {
     var resultsUpdate = function () {
         console.log("  Results Update ");
         if (timeRecord > 1) {
-            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord.toFixed(3) + " seconds remaining.";
+            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore + " with: " + timeRecord.toFixed(3) + " seconds remaining.";
         }
         else if (timeRecord > 0) {
 
-            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord.toFixed(3) + " of a second remaining.";
+            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore + " with: " + timeRecord.toFixed(3) + " of a second remaining.";
         }
         else {
 
-            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with no time remaining.";
+            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore + " with no time remaining.";
 
         }
     }
@@ -536,7 +536,8 @@ var responseValidator = function (questionIndex, responseIndex) {
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
 
     if (answerCheck === responseIndex) {
-        userScore++;
+        userScore += object.gameDynamics.pointsForCorrect;
+        console.log("userScore now: ", userScore);
         object.displayState.gamePlay.footerParagraph = "Your last response was: CORRECT.  + plus: " + object.gameDynamics.pointsForCorrect + " points!";
     }
     else {
@@ -549,7 +550,7 @@ var responseValidator = function (questionIndex, responseIndex) {
 
 var updateHighScores = function (newRecordArray) {
 
-    console.log("updateHighScores");
+    console.log("updateHighScores", object.highScores);
     // BONGO
 
     var tempArray = [];
@@ -560,24 +561,34 @@ var updateHighScores = function (newRecordArray) {
         console.log(i, " loops so far");
 
         if (inserted) {
+            console.log("REX");
+            console.log(newRecordArray[1], " ^^^^^^^ ", object.highScores[i][1]);
+
             tempArray.push(object.highScores[i]);
         }
         else {
-
+            console.log("Box");
+            console.log("&&&&&", newRecordArray[1], " ------- ", object.highScores[i][1]);
             if (newRecordArray[1] >= object.highScores[i][1]) {
+                console.log(newRecordArray[1], " ------- ", object.highScores[i][0]);
                 tempArray.push(newRecordArray);
                 tempArray.push(object.highScores[i]);
                 inserted = true;
-            };
-        };
+                i++;
+            }
+            else {
+                tempArray.push(object.highScores[i]);
+            }
+        }
+        
     };
 
     object.highScores = tempArray;
     localStorage.setItem("quizHighS", JSON.stringify(object.highScores));
     userScore = 0;
 
-    console.log(newRecordArray, " is the newRecordArray 391");
-    console.log(object.highScores, " are the highscores arrays888888888");
+    console.log(newRecordArray, " is the newRecordArray");
+    console.log(object.highScores, " is the updated highScores array");
 
 }
 
