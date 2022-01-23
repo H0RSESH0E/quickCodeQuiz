@@ -570,7 +570,7 @@ var gameAdvance = function (gameOver) {
         object.displayState.gamePlay.cardTitle = "GAME OVER";
         object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
         cardBodyParagraph.className = "link";
-        dePopulateCardUl();
+
 
     }
 
@@ -580,7 +580,7 @@ var gameAdvance = function (gameOver) {
         object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
         object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
         cardBodyParagraph.className = "link";
-        dePopulateCardUl();
+
     }
 }
 
