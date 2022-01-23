@@ -22,7 +22,7 @@ var object = {
             cardTitle: "Are you ready?",
             bodyParagraph: "",
             footerParagraph: "",
-            cardTimeTitle: "",
+            cardTimeTitle: "Countdown to start:",
             cardTimeValue: ""
 
         },
@@ -37,8 +37,8 @@ var object = {
 
         resultsAndDetails: {
             cardTitle: "You scored: ",
-            bodyParagraph: "Results",
-            footerParagraph: "Enter your initials: ",
+            bodyParagraph: "Enter your initials: ",
+            footerParagraph: "Press either button to see the high scores.",
             cardTimeTitle: "",
             cardTimeValue: ""
         },
@@ -53,9 +53,9 @@ var object = {
     },
 
     gameDynamics: {
-        timePerQuestion: 60,
+        timePerQuestion: 15,
         timeDemerit: 15,
-        gameClockSpeed: 200,
+        gameClockSpeed: 400,
         countDownLength: 5,
         pointsForCorrect: 5
     },
@@ -131,11 +131,12 @@ var cycle;
 var speed = object.gameDynamics.gameClockSpeed;
 
 var populateCardUl = function () {
-    // // debugger;
+
+    console.log("populateCardUl");
+    console.log(object);
+
     cardUl.innerHTML = "";
-
-
-    if (qCount < numberOfQuestions) {
+    if (gameState === "gamePlay" && qCount < (numberOfQuestions - 1) && timeRemaining > 0) {
 
         object.displayState.gamePlay.cardTitle = object.gamePlayContent[qCount].stem;
 
@@ -146,18 +147,42 @@ var populateCardUl = function () {
             option.setAttribute("id", "option" + i);
             option.className = "link";
             option.textContent = object.gamePlayContent[qCount].responseOptions[i];
+
         }
+    }
+    else if (gameState === "highScores") {
+
+
+        for (var i = 0; i < object.highScores.length; i++) {
+            console.log("here we are!!!!!!!!!  i = ", i, " - qCount: ", qCount)
+            var option = document.createElement("li");
+            cardUl.appendChild(option);
+            option.setAttribute("id", "option" + i);
+            option.className = "link";
+            option.textContent = object.highScores[i][0] + " " + object.highScores[i][1];
+        }
+
+
+
+
     }
 }
 
 var dePopulateCardUl = function () {
 
+    console.log("dePopulateCardUl");
+    console.log(object);
+
     cardUl.innerHTML = "";
+
 }
 
 var drawPage = function () {
 
-    if (gameState === "gamePlay") {
+    console.log("drawPage's game state: ", gameState);
+    console.log(object);
+
+    if (gameState === "gamePlay" || gameState === "highScores") {
         populateCardUl();
     }
     else {
@@ -177,9 +202,34 @@ var drawPage = function () {
 
 var ignitionCountDown = function (current) {
 
-    console.log("ignitionCountDown is running");
+    console.log("ignitionCountDown");
+    console.log(object);
+
+    if (timeRemaining === 0 && gameState === "countDown") {
+
+        object.displayState[gameState].cardTitle = "";
+        object.displayState[gameState].cardTimeTitle = "";
+        console.log(" here ", timeRemaining)
+        object.displayState[gameState].cardTimeValue = "";
+        object.displayState[gameState].bodyParagraph = "Go!";
+        drawPage();
+
+    }
+    else if (timeRemaining === 2 && gameState === "countDown") {
+
+        object.displayState[gameState].cardTitle = "Get Set!";
+        object.displayState[gameState].cardTimeValue = timeRemaining;
+        cardTimeValue.textContent = timeRemaining;
+        drawPage();
+    }
+    else {
+        object.displayState.countDown.cardTimeValue = timeRemaining;
+        cardTimeValue.textContent = timeRemaining;
+    }
+
 
     if (timeRemaining <= -1) {
+        console.log("time remaining in ignition countdown")
         clearInterval(x);
         object.displayState[gameState].cardTimeValue = "";
         gameState = "gamePlay";
@@ -216,90 +266,76 @@ var ignitionCountDown = function (current) {
 
     }
 
-    if (timeRemaining === 0 && gameState === "countDown") {
 
-       
-        object.displayState[gameState].cardTimeTitle = "";
-        object.displayState[gameState].cardTimeValue = "";
-        object.displayState[gameState].bodyParagraph = "Go!";
-        drawPage();
-
-    }
-    // else if ( timeRemaining === 1 && gameState === "countDown") {
-
-    //     object.displayState[gameState].cardTimeTitle = "";
-    //     object.displayState.countDown.cardTimeValue = timeRemaining;
-    //     cardTimeValue.textContent = timeRemaining;
-    //     drawPage();
-    // }
-    else if ( timeRemaining === (object.gameDynamics.countDownLength - 1) && gameState === "countDown"){
-
-        object.displayState[gameState].cardTitle = "";
-        object.displayState[gameState].cardTimeTitle = "Get Set!";
-        object.displayState[gameState].cardTimeValue = timeRemaining;
-        cardTimeValue.textContent = timeRemaining;
-        drawPage();
-    }
-    else {
-    object.displayState.countDown.cardTimeValue = timeRemaining;
-    cardTimeValue.textContent = timeRemaining;
-    }
 
     timeRemaining--;
-    console.log(timeRemaining);
+    console.log(timeRemaining, " is the time remaing in countdown");
 }
 
 var gameCountDown = function (current) {
 
-    console.log("gameCountDown is running");
-
+    console.log("gameCountDown");
+    console.log(object);
 
     now = Date.now()
-    var elapsedTime = ((now - then)/1000).toFixed(3);
+    var elapsedTime = ((now - then) / 1000).toFixed(3);
     var timeRecord = timeRemaining - elapsedTime;
     cardTimeValue.textContent = timeRecord.toFixed(2);
 
     var resultsUpdate = function () {
-
+        console.log("  Results Update ");
         if (timeRecord > 1) {
-            object.displayState.resultsAndDetails.bodyParagraph = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord + " seconds remaining.";
+            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord.toFixed(3) + " seconds remaining.";
+        }
+        else if (timeRecord > 0) {
+
+            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord.toFixed(3) + " of a second remaining.";
         }
         else {
-            object.displayState.resultsAndDetails.bodyParagraph = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with: " + timeRecord + " of a second remaining.";
+
+            object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore * object.gameDynamics.pointsForCorrect + " with no time remaining.";
+
         }
     }
 
-    if (qCount === numberOfQuestions) {
-
+    if (qCount === numberOfQuestions -1) {
+        console.log("  qCount = numberOfQuestions  ", qCount, " ", numberOfQuestions);
         cardTimeValue.textContent = "",
-        clearInterval(y);
+            clearInterval(y);
         resultsUpdate();
+        gameAdvance();
+        drawPage();
     }
 
-    if (timeRemaining <= -1) {
-
+    if (timeRecord <= 0) {
+        console.log("  time record <=0  ");
         cardTimeValue.textContent = "",
+            clearInterval(y);
         resultsUpdate();
-        clearInterval(y);
-        timeRemaining = 3;
-        gameAdvance()
+        gameAdvance();
+        drawPage();
+        timeRemaining = object.gameDynamics.countDownLength;
         return;
     }
 
     if (gameState !== "gamePlay") {
-
+        console.log("  game state !== gameplay  ");
         cardTimeValue.textContent = "",
-        resultsUpdate();
+            resultsUpdate();
         clearInterval(y);
-        timeRemaining = 3;
+
         drawPage();
+        timeRemaining = object.gameDynamics.countDownLength;
         return;
 
     }
 }
 
 var createHighScoresDivs = function () {
-    // // debugger;
+
+    console.log("createHighScoresDivs");
+    console.log(object);
+
     var divDisplay = document.createElement("div");
     cardBody.appendChild(divDisplay);
 
@@ -330,8 +366,10 @@ var createHighScoresDivs = function () {
 }
 
 var startStopBtnHandler = function (event) {
-    console.log(event.target, " 266");
-    // // debugger;
+
+    console.log("startStopBtnHandler");
+    console.log(object);
+
     if (event.target.matches("#start-btn")) {
 
         switch (gameState) {
@@ -340,7 +378,8 @@ var startStopBtnHandler = function (event) {
                 break;
             case "newGame":
                 gameState = "countDown";
-                    x = setInterval(ignitionCountDown, 1000, "countDown");
+                ignitionCountDown("countDown");
+                x = setInterval(ignitionCountDown, 1000, "countDown");
                 break;
             case "countDown":
                 gameState = "gamePlay";
@@ -353,6 +392,8 @@ var startStopBtnHandler = function (event) {
                 break;
             case "resultsAndDetails":
                 gameState = "highScores";
+                // createHighScoresDivs();
+                // updateHighScores();
                 break;
             case "highScores":
                 gameState = "newGame";
@@ -379,6 +420,8 @@ var startStopBtnHandler = function (event) {
                 break;
             case "resultsAndDetails":
                 gameState = "highScores";
+                // createHighScoresDivs();
+                // updateHighScores();
                 break;
             case "highScores":
                 gameState = "titleCard";
@@ -391,18 +434,24 @@ var startStopBtnHandler = function (event) {
 
 
 var gameAdvance = function (mark) {
-    // // debugger;
 
-    
 
-    if (timeRemaining <= 0) {
+    console.log("gameAdvance");
+    console.log(object);
+    console.log("# of questions: ", numberOfQuestions);
+    console.log("qCount: ", qCount);
 
+    if (qCount < numberOfQuestions - 1) {
+        console.log("gameAdvance #1");
+        dePopulateCardUl();
         object.displayState.gamePlay.cardTitle = "GAME OVER";
         object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
         cardBodyParagraph.className = "link";
     }
 
     if (qCount === numberOfQuestions - 1) {
+        console.log("gameAdvance #2");
+        dePopulateCardUl();
         object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
         object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
         cardBodyParagraph.className = "link";
@@ -410,6 +459,9 @@ var gameAdvance = function (mark) {
 }
 
 var responseValidator = function (questionIndex, responseIndex) {
+
+    console.log("responseValidator");
+    console.log(object);
 
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
 
@@ -426,8 +478,10 @@ var responseValidator = function (questionIndex, responseIndex) {
 }
 
 var updateHighScores = function (newRecordArray) {
-    console.log(object.highScores, " are the highscores to begin with 366");
-    console.log(newRecordArray, " is the newRecordArray to begin with");
+
+    console.log("updateHighScores");
+    console.log(object);
+
     var tempArray = [];
     var inserted = false;
 
@@ -457,12 +511,11 @@ var updateHighScores = function (newRecordArray) {
 }
 
 var userClickResponseHandler = function (event) {
+    console.log(object);
+    console.log("userClickResponseHandler");
+
     event.preventDefault();
 
-    console.log("Zimmer");
-    console.log(qCount, " is the qCount");
-
-    // get target element from event
     var targetElId = event.target.getAttribute("id");
     var targetEltext = event.target.textContent;
     console.log("Log Strikes Back!!! -- 403-- ", targetEltext);

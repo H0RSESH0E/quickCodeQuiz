@@ -219,10 +219,16 @@ input {
 }
 
 ul {
+    justify-self: center;
+    align-self: center;
     list-style-type: none;
     font-size: 70%;
     width: max-content;
-    
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+
+
 }
 
 p {
