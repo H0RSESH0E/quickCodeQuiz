@@ -105,11 +105,11 @@ var object = {
 
 
     gameDynamics: {
-        timePerQuestion: 25,
-        timeDemerit: 15,
-        gameClockSpeed: 3500,
+        timePerQuestion: 3,
+        timeDemerit: 3,
+        gameClockSpeed: 100,
         countDownLength: 5,
-        pointsForCorrect: 5
+        pointsForCorrect: 15
     },
 
     highScores: [
@@ -145,6 +145,27 @@ var object = {
         {
             stem: "What does HTML stand for?",
             responseOptions: ["How Tall is Mom's Lily", "Hyper Tax Murky Luggage", "Hypertext Markup Language", "High Tech Modern Linguistics"],
+            correctResponse: "2",
+            feedback: ""
+
+        },
+        {
+            stem: "What does CSS stand for?",
+            responseOptions: ["Case Structured Standards", "Constant Simple Sudden", "Jaberwocky", "Cascading Style Sheet"],
+            correctResponse: "3",
+            feedback: ""
+
+        },
+        {
+            stem: "In what part of the HTML should style information be linked?",
+            responseOptions: ["<head>", "<first>", "body", "feet"],
+            correctResponse: "0",
+            feedback: ""
+
+        },
+        {
+            stem: "How many coders does it take to screw in a lightbulb?",
+            responseOptions: ["One", "Two", "None. That's a hardware issue."],
             correctResponse: "2",
             feedback: ""
 
@@ -233,8 +254,10 @@ var dePopulateCardUl = function () {
 var appendInput = function () {
     var input = document.createElement("input");
     input.setAttribute("id", "initials-input");
+    input.setAttribute("maxlength", "3");
     cardBody.removeChild(cardBody.lastChild);
     cardBody.appendChild(input);
+    document.getElementById("initials-input").focus();
 }
 
 var removeInput = function () {
@@ -262,8 +285,33 @@ var drawPage = function () {
     cardTimeValue.textContent = object.displayState[gameState].cardTimeValue;
 
     cardBodyParagraph.textContent = object.displayState[gameState].bodyParagraph;
+    
+    var delay = setTimeout(function(){
+        
+        footerParagraph.textContent = object.displayState[gameState].footerParagraph;
 
-    footerParagraph.textContent = object.displayState[gameState].footerParagraph;
+    },object.gameDynamics.gameClockSpeed * 5)
+
+    if (gameState === "gamePlay") {
+
+        var delay = setTimeout(function(){
+        
+            footerParagraph.textContent = object.displayState[gameState].footerParagraph;
+    
+        },300)
+
+        var delay = setTimeout(function(){
+            
+            footerParagraph.textContent = "";
+
+        },3000)
+    }
+    else {
+        footerParagraph.textContent = object.displayState[gameState].footerParagraph;
+
+    }
+
+    
 }
 
 var ignitionCountDown = function (current) {
@@ -453,6 +501,7 @@ var startStopBtnHandler = function (event) {
             case "gamePlay":
                 var conf = window.confirm("Are you sure you want to restart without seeing your resuts?")
                 if (conf) {
+                    object.displayState = object.originalDisplayState;
                     gameState = "titleCard";
                 }
                 break;
@@ -464,6 +513,8 @@ var startStopBtnHandler = function (event) {
                 removeInput();
                 break;
             case "highScores":
+                object.displayState = object.originalDisplayState;
+                qCount = 0;
                 gameState = "titleCard";
                 break;
             default:
@@ -494,6 +545,8 @@ var startStopBtnHandler = function (event) {
                 removeInput();
                 break;
             case "highScores":
+                object.displayState = object.originalDisplayState;
+                qCount = 0;
                 gameState = "titleCard";
                 break;
             default:
@@ -517,6 +570,8 @@ var gameAdvance = function (gameOver) {
         object.displayState.gamePlay.cardTitle = "GAME OVER";
         object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
         cardBodyParagraph.className = "link";
+        dePopulateCardUl();
+
     }
 
     if (qCount === numberOfQuestions) {
@@ -525,6 +580,7 @@ var gameAdvance = function (gameOver) {
         object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
         object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
         cardBodyParagraph.className = "link";
+        dePopulateCardUl();
     }
 }
 
@@ -569,7 +625,7 @@ var updateHighScores = function (newRecordArray) {
         else {
             console.log("Box");
             console.log("&&&&&", newRecordArray[1], " ------- ", object.highScores[i][1]);
-            if (newRecordArray[1] >= object.highScores[i][1]) {
+            if (newRecordArray[1] > object.highScores[i][1]) {
                 console.log(newRecordArray[1], " ------- ", object.highScores[i][0]);
                 tempArray.push(newRecordArray);
                 tempArray.push(object.highScores[i]);
@@ -634,8 +690,10 @@ var userClickResponseHandler = function (event) {
 
     if (targetEltext === "Click here to see your results.") {
         gameState = "resultsAndDetails";
-        cardBodyParagraph.className = "";
+        cardBodyParagraph.classList.remove("link");
         appendInput();
+        var input = document.getElementById("initials-input");
+
         drawPage();
         return;
     }
@@ -645,6 +703,22 @@ var userClickResponseHandler = function (event) {
         console.log("Do Nothing!!")
     }
     else if (gameState === "resultsAndDetails") {
+        cardBodyParagraph.classList.remove("link");
+        lastPlayer = document.querySelector("input").value.toUpperCase();
+        console.log(lastPlayer);
+        var newRecordArray = [lastPlayer, userScore];
+        updateHighScores(newRecordArray);
+        gameState = "highScores";
+        removeInput();
+        drawPage();
+    }
+    drawPage();
+}
+
+var userSubmitResponseHandler = function (event) {
+    var yyy = event.target;
+
+    if (event.keyCode === 13) {
         lastPlayer = document.querySelector("input").value.toUpperCase();
         console.log(lastPlayer);
         var newRecordArray = [lastPlayer, userScore];
@@ -660,7 +734,7 @@ var highlightLinkText = function (event) {
 
     var targetEl = event.target;
 
-    targetEl.classList.toggle("highlight");
+    targetEl.classList.add("highlight");
 
 }
 
@@ -668,7 +742,7 @@ var unhighlightLinkText = function (event) {
 
     var targetEl = event.target;
 
-    targetEl.classList.toggle("highlight");
+    targetEl.classList.remove("highlight");
 
 }
 
@@ -697,7 +771,7 @@ drawPage(gameState);
 
 stopBtn.addEventListener("click", startStopBtnHandler);
 startBtn.addEventListener("click", startStopBtnHandler);
-
+addEventListener("keydown", userSubmitResponseHandler);
 screen.addEventListener("click", userClickResponseHandler)
 
 screen.onmouseover = highlightLinkText;
