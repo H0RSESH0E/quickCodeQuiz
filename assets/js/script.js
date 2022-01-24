@@ -604,6 +604,7 @@ var userClickResponseHandler = function (event) {
         gameState = "highScores";
         removeInput();
         drawPage();
+        object.displayState = object.originalDisplayState;
     }  
 }
 
