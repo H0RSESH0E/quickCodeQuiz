@@ -29,9 +29,17 @@ var object = {
 
         gamePlay: {
             cardTitle: "",
-            bodyParagraph: "Select your response: ",
+            bodyParagraph: "Click on your choice. ",
             footerParagraph: "",
             cardTimeTitle: "Time remaining:",
+            cardTimeValue: ""
+        },
+
+        gameOver: {
+            cardTitle: "GAME OVER",
+            bodyParagraph: "Click here to see your results.",
+            footerParagraph: "",
+            cardTimeTitle: "",
             cardTimeValue: ""
         },
 
@@ -79,9 +87,17 @@ var object = {
 
         gamePlay: {
             cardTitle: "",
-            bodyParagraph: "Select your response: ",
+            bodyParagraph: "Click on your choice. ",
             footerParagraph: "",
             cardTimeTitle: "Time remaining:",
+            cardTimeValue: ""
+        },
+
+        gameOver: {
+            cardTitle: "GAME OVER",
+            bodyParagraph: "Click here to see your results.",
+            footerParagraph: "",
+            cardTimeTitle: "",
             cardTimeValue: ""
         },
 
@@ -102,19 +118,17 @@ var object = {
         },
     },
 
-
-
     gameDynamics: {
-        timePerQuestion: 3,
-        timeDemerit: 3,
+        timePerQuestion: 15,
+        timeDemerit: 15,
         gameClockSpeed: 100,
         countDownLength: 5,
-        pointsForCorrect: 15
+        pointsForCorrect: 25
     },
 
     highScores: [
 
-        ["DB", 100],
+        ["D B", 151],
         ["AAA", 0],
         ["AAA", 0],
         ["AAA", 0],
@@ -206,9 +220,6 @@ var speed = object.gameDynamics.gameClockSpeed;
 
 var populateCardUl = function () {
 
-    console.log("populateCardUl");
-    // BONGO
-
     cardUl.innerHTML = "";
     if (gameState === "gamePlay" && qCount < (numberOfQuestions) && timeRemaining > 0) {
 
@@ -226,6 +237,7 @@ var populateCardUl = function () {
     }
     else if (gameState === "highScores") {
 
+        cardUl.classList.add("scores");
 
         for (var i = 0; i < object.highScores.length; i++) {
             console.log("here we are!!!!!!!!!  i = ", i, " - qCount: ", qCount)
@@ -235,20 +247,13 @@ var populateCardUl = function () {
             option.className = "link";
             option.textContent = object.highScores[i][0] + " " + object.highScores[i][1];
         }
-
-
-
-
     }
 }
 
 var dePopulateCardUl = function () {
 
     console.log("dePopulateCardUl");
-    // BONGO
-
     cardUl.innerHTML = "";
-
 }
 
 var appendInput = function () {
@@ -268,9 +273,6 @@ var removeInput = function () {
 
 var drawPage = function () {
 
-    console.log("drawPage's game state: ", gameState);
-    // BONGO
-
     if (gameState === "gamePlay" || gameState === "highScores") {
         populateCardUl();
     }
@@ -285,52 +287,36 @@ var drawPage = function () {
     cardTimeValue.textContent = object.displayState[gameState].cardTimeValue;
 
     cardBodyParagraph.textContent = object.displayState[gameState].bodyParagraph;
-    
-    var delay = setTimeout(function(){
-        
+
+    var delay = setTimeout(function () {
+
         footerParagraph.textContent = object.displayState[gameState].footerParagraph;
 
-    },object.gameDynamics.gameClockSpeed * 5)
+    }, object.gameDynamics.gameClockSpeed * 5)
 
     if (gameState === "gamePlay") {
-
-        var delay = setTimeout(function(){
-        
+        var delay = setTimeout(function () {
             footerParagraph.textContent = object.displayState[gameState].footerParagraph;
-    
-        },300)
-
-        var delay = setTimeout(function(){
-            
+        }, 300)
+        var delay = setTimeout(function () {
             footerParagraph.textContent = "";
-
-        },3000)
+        }, 3000)
     }
     else {
         footerParagraph.textContent = object.displayState[gameState].footerParagraph;
-
     }
-
-    
 }
 
 var ignitionCountDown = function (current) {
 
-    console.log("ignitionCountDown");
-    // BONGO
-
     if (timeRemaining === 0 && gameState === "countDown") {
-
         object.displayState[gameState].cardTitle = "";
         object.displayState[gameState].cardTimeTitle = "";
-        console.log(" here ", timeRemaining)
         object.displayState[gameState].cardTimeValue = "";
         object.displayState[gameState].bodyParagraph = "Go!";
         drawPage();
-
     }
     else if (timeRemaining === 2 && gameState === "countDown") {
-
         object.displayState[gameState].cardTitle = "Get Set!";
         object.displayState[gameState].cardTimeValue = timeRemaining;
         cardTimeValue.textContent = timeRemaining;
@@ -341,9 +327,7 @@ var ignitionCountDown = function (current) {
         cardTimeValue.textContent = timeRemaining;
     }
 
-
     if (timeRemaining <= -1) {
-        console.log("time remaining in ignition countdown")
         clearInterval(x);
         object.displayState[gameState].cardTimeValue = "";
         gameState = "gamePlay";
@@ -366,7 +350,6 @@ var ignitionCountDown = function (current) {
             case "newGame":
                 timeRemaining = object.gameDynamics.countDownLength;
                 object.displayState.countDown.cardTimeValue = object.gameDynamics.countDownLength;
-
                 drawPage();
                 return;
             case "gamePlay":
@@ -377,19 +360,12 @@ var ignitionCountDown = function (current) {
                 drawPage();
                 return;
         }
-
     }
 
-
-
     timeRemaining--;
-    console.log(timeRemaining, " is the time remaing in countdown");
 }
 
 var gameCountDown = function (current) {
-
-    console.log("gameCountDown: qCount: ", qCount);
-    // BONGO
 
     now = Date.now()
     var elapsedTime = ((now - then) / 1000).toFixed(3);
@@ -402,87 +378,44 @@ var gameCountDown = function (current) {
             object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore + " with: " + timeRecord.toFixed(3) + " seconds remaining.";
         }
         else if (timeRecord > 0) {
-
             object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore + " with: " + timeRecord.toFixed(3) + " of a second remaining.";
         }
         else {
-
             object.displayState.resultsAndDetails.cardTitle = "You scored: " + userScore + " with no time remaining.";
-
         }
     }
 
     if (qCount === numberOfQuestions) {
-        console.log("  qCount = numberOfQuestions  ", qCount, " ", numberOfQuestions);
         cardTimeValue.textContent = "",
-        clearInterval(y);
+            clearInterval(y);
         resultsUpdate();
-        gameAdvance();
+        gameState = "gameOver";
+        cardBodyParagraph.className = "link";
         drawPage();
     }
 
     if (timeRecord <= 0 && qCount < numberOfQuestions) {
-        console.log("  time record <=0  ");
         cardTimeValue.textContent = "",
-        clearInterval(y);
+            clearInterval(y);
         resultsUpdate();
-        gameAdvance("GAME OVER");
+        gameState = "gameOver";
+        cardBodyParagraph.className = "link";
         drawPage();
         timeRemaining = object.gameDynamics.countDownLength;
         return;
     }
 
     if (gameState !== "gamePlay") {
-        console.log("  game state !== gameplay  ");
         cardTimeValue.textContent = "",
             resultsUpdate();
         clearInterval(y);
-
         drawPage();
         timeRemaining = object.gameDynamics.countDownLength;
         return;
-
-    }
-}
-
-var createHighScoresDivs = function () {
-
-    console.log("createHighScoresDivs");
-    // BONGO
-
-    var divDisplay = document.createElement("div");
-    cardBody.appendChild(divDisplay);
-
-    var column0 = document.createElement("div");
-    divDisplay.appendChild(column0);
-    var column1 = document.createElement("div");
-    divDisplay.appendChild(column1);
-
-    for (var d = 0; d < 2; d++) {
-
-        for (var i = 0; i < 10; i++) {
-
-            switch (d) {
-                case 0:
-                    var div = document.createElement("div");
-                    column0.appendChild(div);
-                    div.textContent = object.highScores[i][d];
-                    div.className = "users-initials"
-                    break;
-                case 1:
-                    var div = document.createElement("div");
-                    column0.appendChild(div);
-                    div.textContent = object.highScores[i][d];
-                    div.className = "users-scores"
-            }
-        }
     }
 }
 
 var startStopBtnHandler = function (event) {
-
-    console.log("startStopBtnHandler");
-    // BONGO
 
     if (event.target.matches("#start-btn")) {
 
@@ -514,6 +447,7 @@ var startStopBtnHandler = function (event) {
                 break;
             case "highScores":
                 object.displayState = object.originalDisplayState;
+                cardUl.classList.remove("scores");
                 qCount = 0;
                 gameState = "titleCard";
                 break;
@@ -546,6 +480,7 @@ var startStopBtnHandler = function (event) {
                 break;
             case "highScores":
                 object.displayState = object.originalDisplayState;
+                cardUl.classList.remove("scores");
                 qCount = 0;
                 gameState = "titleCard";
                 break;
@@ -555,40 +490,7 @@ var startStopBtnHandler = function (event) {
     drawPage();
 }
 
-
-var gameAdvance = function (gameOver) {
-
-
-    console.log("gameAdvance - mark: ", gameOver);
-    // BONGO
-    console.log("# of questions: ", numberOfQuestions);
-    console.log("qCount: ", qCount);
-
-    if (gameOver) {
-        console.log("gameAdvance #1");
-        dePopulateCardUl();
-        object.displayState.gamePlay.cardTitle = "GAME OVER";
-        object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
-        cardBodyParagraph.className = "link";
-
-
-    }
-
-    if (qCount === numberOfQuestions) {
-        console.log("gameAdvance #2");
-        dePopulateCardUl();
-        object.displayState.gamePlay.cardTitle = "You've completed the quiz.";
-        object.displayState.gamePlay.bodyParagraph = "Click here to see your results.";
-        cardBodyParagraph.className = "link";
-
-    }
-}
-
 var responseValidator = function (questionIndex, responseIndex) {
-
-    console.log("responseValidator - qCount: ", qCount);
-    // BONGO
-
     var answerCheck = object.gamePlayContent[questionIndex].correctResponse;
 
     if (answerCheck === responseIndex) {
@@ -601,13 +503,12 @@ var responseValidator = function (questionIndex, responseIndex) {
         timeRemaining -= object.gameDynamics.timeDemerit;
         object.displayState.gamePlay.footerParagraph = "Your last response was: INCORRECT.  - minus: " + object.gameDynamics.timeDemerit + " seconds.";
     }
-
 }
 
 var updateHighScores = function (newRecordArray) {
 
     console.log("updateHighScores", object.highScores);
-    // BONGO
+
 
     var tempArray = [];
     var inserted = false;
@@ -636,7 +537,7 @@ var updateHighScores = function (newRecordArray) {
                 tempArray.push(object.highScores[i]);
             }
         }
-        
+
     };
 
     object.highScores = tempArray;
@@ -649,40 +550,32 @@ var updateHighScores = function (newRecordArray) {
 }
 
 var userClickResponseHandler = function (event) {
-    // BONGO
-    console.log("userClickResponseHandler - qCount: ", qCount);
 
     event.preventDefault();
 
     var targetElId = event.target.getAttribute("id");
     var targetEltext = event.target.textContent;
-    console.log("Log Strikes Back!!! -- 403-- ", targetEltext);
-
 
     switch (targetElId) {
         case "option0":
-            console.log("option00000", targetElId);
             responseValidator(qCount, "0");
             qCount++;
-            gameAdvance();
+            drawPage();
             break;
         case "option1":
-            console.log("option111111", targetElId);
             responseValidator(qCount, "1");
             qCount++;
-            gameAdvance();
+            drawPage();
             break;
         case "option2":
-            console.log("option222222", targetElId);
             responseValidator(qCount, "2");
             qCount++;
-            gameAdvance();
+            drawPage();
             break;
         case "option3":
-            console.log("option33333", targetElId);
             responseValidator(qCount, "3");
             qCount++;
-            gameAdvance();
+            drawPage();
             break;
         default:
             break;
@@ -693,16 +586,11 @@ var userClickResponseHandler = function (event) {
         cardBodyParagraph.classList.remove("link");
         appendInput();
         var input = document.getElementById("initials-input");
-
         drawPage();
         return;
     }
 
-    if (targetElId === "initials-input") {
-        // Nothing doing
-        console.log("Do Nothing!!")
-    }
-    else if (gameState === "resultsAndDetails") {
+    if (gameState === "resultsAndDetails" && targetElId !== "initials-input") {
         cardBodyParagraph.classList.remove("link");
         lastPlayer = document.querySelector("input").value.toUpperCase();
         console.log(lastPlayer);
@@ -711,12 +599,10 @@ var userClickResponseHandler = function (event) {
         gameState = "highScores";
         removeInput();
         drawPage();
-    }
-    drawPage();
+    }  
 }
 
 var userSubmitResponseHandler = function (event) {
-    var yyy = event.target;
 
     if (event.keyCode === 13) {
         lastPlayer = document.querySelector("input").value.toUpperCase();
@@ -727,7 +613,6 @@ var userSubmitResponseHandler = function (event) {
         removeInput();
         drawPage();
     }
-    drawPage();
 }
 
 var highlightLinkText = function (event) {
@@ -746,10 +631,6 @@ var unhighlightLinkText = function (event) {
 
 }
 
-
-
-
-
 var loadHighScores = function () {
 
     var storedScores = JSON.parse(localStorage.getItem("quizHighS"));
@@ -759,20 +640,20 @@ var loadHighScores = function () {
     }
 }
 
-
+// Function call begins the application
 loadHighScores();
 
-
-// Function call begins the application
 drawPage(gameState);
 
 
-// User interaction monitors
-
+// Monitors Start and Stop buttons
 stopBtn.addEventListener("click", startStopBtnHandler);
 startBtn.addEventListener("click", startStopBtnHandler);
-addEventListener("keydown", userSubmitResponseHandler);
-screen.addEventListener("click", userClickResponseHandler)
 
+// Monitors keyboard for data entry
+addEventListener("keydown", userSubmitResponseHandler);
+
+// Monitors mouse behaviour
+screen.addEventListener("click", userClickResponseHandler);
 screen.onmouseover = highlightLinkText;
 screen.onmouseout = unhighlightLinkText;

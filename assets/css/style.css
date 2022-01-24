@@ -163,11 +163,12 @@ footer img {
 #cardTitle {
     flex-wrap: wrap;
     min-width: 55%;
+    padding-right: 1vh;
     flex-shrink: 1;
     flex-grow: 0;
 }
 
-#cardTime {
+#cardTime { 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -178,7 +179,7 @@ footer img {
 
 #cardTimeTitle {
     height: 40%;
-    /* white-space: nowrap; */
+    text-align: center;
     flex-shrink: 3;
 
 }
@@ -229,12 +230,17 @@ ul {
 
     list-style-type: none;
     width: max-content;
-    columns: 2;
-    -webkit-columns: 2;
-    -moz-columns: 2;
+
     position: relative;
     left: -2vw;
 
+}
+
+
+ul.scores {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
 }
 
 li div {
@@ -300,7 +306,7 @@ p {
 }
 
 #cardTime p {
-    margin: 1vh 0 0 0;
+    margin: 0 0 0 0;
 }
 
 @media screen {
@@ -308,12 +314,15 @@ p {
 }
 
 @media only screen and (max-width: 400px) {
-    body {
-      font-size: 60%;
+    :root {
+        --2-font-size: 2.7vh;
     }
  
-    ul {
-        columns: 1;
+    #cardTime {
+        font-size: 80%;
     }
+    
+
+
   }
   
