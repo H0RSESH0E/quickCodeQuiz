@@ -1,4 +1,4 @@
-
+// This object contains all game content including game dynamics
 
 var object = {
 
@@ -189,6 +189,7 @@ var object = {
 
 }
 
+// These variables link the HTML elements to the Javascript
 var localHighscores = object.highScores;
 var stopBtn = document.querySelector("#stop-btn");
 var startBtn = document.querySelector("#start-btn");
@@ -201,10 +202,12 @@ var cardBodyParagraph = document.querySelector("#bodyParagraph");
 var cardUl = document.querySelector("#cardUl");
 var footerParagraph = document.querySelector("#footerParagraph");
 
+// These variables interpret the nature of the game content object for the intial state of the game
 var numberOfQuestions = Object.keys(object.gamePlayContent).length;
 var timeRemaining = object.gameDynamics.countDownLength;
 object.displayState.countDown.cardTimeValue = timeRemaining;
 
+// These variables are present for the begining of the game
 var startTime = Date.now();
 var gameState = "titleCard";
 var qCount = 0;
@@ -217,6 +220,9 @@ var then;
 var now;
 var cycle;
 var speed = object.gameDynamics.gameClockSpeed;
+
+
+// All function names are semantic
 
 var populateCardUl = function () {
 
@@ -269,7 +275,6 @@ var removeInput = function () {
     cardBody.removeChild(cardBody.lastChild);
     cardBody.appendChild(cardUl);
 }
-
 
 var drawPage = function () {
 
@@ -643,7 +648,7 @@ var loadHighScores = function () {
 // Function call begins the application
 loadHighScores();
 
-drawPage(gameState);
+drawPage();
 
 
 // Monitors Start and Stop buttons

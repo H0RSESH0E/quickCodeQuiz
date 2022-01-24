@@ -2,37 +2,18 @@
 
     /*Fonts*/
     --1-headline-font: cache;
-    --1-font-size: calc( (( var(--swf) + var(--shf))/2) * 28px);
-    --1-font-color: #fff;
-
     --2-body-font: AST;
     --2-font-size: 4vh;
-    --2-font-color: #9b9cb8;
 
     --shadow: 1px 1px 2px var(--color-three), 2px 2px 17px var(--color-three);
 
     /* Backgrounds and borders */
-    --color-one: #243e90;
     --color-two: #000;
     --color-three:rgb(52, 255, 187);
-    --color-four: #818997;
-    --screenColor: rgb(4, 21, 31);
-    
-    /*  */
-    /* Mobile First (latest iPhone First) Parameters */
-    --swf: calc(375/375); /* Screen Width Factor */
-    --shf: calc(812/812); /* Screen Height Factor */
-
-    /* Dynamically adjusted sizing for non-flex containers */
-    --iconS-size:  calc( (( var(--swf) + var(--shf))/2) * 35px);
-  
+    --screenColor: rgb(4, 21, 31);  
 }
 
-/* * {
-    border: 2px dotted rgba(0, 204, 255, 0.219);
-    background-color: rgba(51, 15, 253, 0.048);
-}   */
-  
+
 @font-face {
     font-family: 'cache';
     src:  url('./Cache-Regular.ttf') format('truetype');
@@ -86,48 +67,7 @@ main {
     align-items: center;
     justify-content: center;
     height: 70%;
-
 }
-
-footer {
-    display: flex;
-    height: 10%;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1vh;
-}
-
-footer img {
-    height: fit-content;
-    max-height: 7vh;
-}
-
-.btn {
-        border-radius: 50%;
-        padding: 0.1vh;
-        font-size: 2.2vh;
-        margin: 0.7vh;
-        box-shadow: 1px 1px 10px var(--color-two);
-        height: 8vh;
-        width: 8vh;
-
-    
-}
-
-#start-btn {
-    background-color: yellow;
-
-}
-
-#stop-btn {
-    background-color: rgb(108, 227, 231);
-}
-
-
-
-
-
-
 
 .gutter {
     flex-basis: 15%;
@@ -195,7 +135,6 @@ footer img {
     margin: 0 2vw 0 2vw;
 }
 
-
 #cardFooter {
     display: flex;
     height: 15%;
@@ -235,7 +174,6 @@ ul {
     left: -2vw;
 
 }
-
 
 ul.scores {
     columns: 2;
@@ -282,7 +220,6 @@ p {
     width: max-content;
 }
 
-
 .link.highlight {
 
     /* font-weight: bolder; */
@@ -297,20 +234,46 @@ p {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-
-
 }
 
 #cardTime {
-    margin: 0px;
+    margin: 0;
 }
 
 #cardTime p {
-    margin: 0 0 0 0;
+    margin: 0;
 }
 
-@media screen {
-    
+footer {
+    display: flex;
+    height: 10%;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1vh;
+}
+
+.btn {
+    border-radius: 50%;
+    padding: 0.1vh;
+    font-size: 2.2vh;
+    margin: 0.7vh;
+    box-shadow: 1px 1px 10px var(--color-two);
+    height: 8vh;
+    width: 8vh;
+}
+
+footer img {
+    height: fit-content;
+    max-height: 7vh;
+}
+
+#start-btn {
+    background-color: yellow;
+
+}
+
+#stop-btn {
+    background-color: rgb(108, 227, 231);
 }
 
 @media only screen and (max-width: 400px) {
@@ -321,8 +284,4 @@ p {
     #cardTime {
         font-size: 80%;
     }
-    
-
-
-  }
-  
+}
