@@ -20,7 +20,7 @@ To set up the website:
 ## Usage
 Use this quiz to test your coding abilities.
 
-See it online now at: [https://h0rsesh0e.github.io/quickCodeQuiz/]
+[See it online now](https://h0rsesh0e.github.io/quickCodeQuiz/)  
 
 ## Credits
 This is my fourth project in the Coding Boot Camp provided by [The School of Continuing Studies, University of Toronto](https://learn.utoronto.ca/) and [Trilogy Education Services](https://www.trilogyed.com/). I was inspired by the art from Joust the video game and use it in a significantly modified form in the website.
