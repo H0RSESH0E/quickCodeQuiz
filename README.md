@@ -9,8 +9,8 @@
 The following is a short description of my experience completing the project:
 
 - I woke up inspired with an idea for driving my quiz application with simple inputs like the old arcade consoles from back in the day.
-- I realized I could create my own object and simply push and pull my way through the data I stored there and I could structure it so that I could used the architecture for any game - just like the shells of the old arcade games.  It was going to be a thing of beauty - an homage to Pong and all the old tech.  I had my own Jodorowsky's Dune style experience instead - well, not quite that bad.  I did submit this afterall.
-- The most significant learning I did was that some time saving structures can become overly labourious to realize -- there is a happy medium.
+- I realized I could create my own object and simply push and pull my way through the data I stored there and I could structure it so that I could use the architecture for any game - just like the shells of the old arcade games.  It was going to be a thing of beauty - an homage to Pong and all the old tech.  I had my own Jodorowsky's Dune style experience instead - well, not quite that bad.  I did submit this afterall.
+- The most significant learning I did was that some time saving structures can become overly labourious to realize -- especially when it's week two of learning javascript -- there is a happy medium.
 
 ![Screenshot](./assets/images/screenshot.png)
 
